@@ -200,6 +200,10 @@ with st.expander("🧮 CALCULADORA DE GANANCIAS (Margen Base)", expanded=False):
     nuevo_margen = st.slider("Margen sugerido (%)", min_value=0, max_value=150, value=st.session_state.margen_global, step=5)
     if nuevo_margen != st.session_state.margen_global:
         st.session_state.margen_global = nuevo_margen
+        # Limpiar los inputs cacheados para forzar el recálculo visual
+        for key in list(st.session_state.keys()):
+            if key.startswith("precio_"):
+                del st.session_state[key]
         st.rerun()
 
 # --- CARRITO INTEGRADO ---
