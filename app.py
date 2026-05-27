@@ -9,7 +9,7 @@ if current_dir not in sys.path:
     sys.path.insert(0, current_dir)
 
 from modules.data_manager import load_catalog_data, guardar_visibilidad
-from modules.utils import generar_mensaje_whatsapp
+from modules.utils import redondear_precio, extraer_descripcion, generar_mensaje_whatsapp
 
 # --- CONFIGURACIÓN DE PÁGINA ---
 if "sidebar_state" not in st.session_state:
@@ -17,27 +17,34 @@ if "sidebar_state" not in st.session_state:
 
 st.set_page_config(
     page_title="Herramienta Preventa | Rojo Malbec",
-    page_icon="📱",
+    page_icon="🍷",
     layout="wide",
     initial_sidebar_state=st.session_state.sidebar_state
 )
 
-# --- ESTILO ---
+# --- ESTILO CLON B2B ---
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 [data-testid="stAppViewContainer"] {
-    background: #f0f2f6;
+    background: linear-gradient(165deg, #0a0a0f 0%, #111118 50%, #0d0d14 100%);
     font-family: 'Inter', sans-serif;
 }
+
 /* Ocultar Streamlit Cloud */
 #MainMenu {visibility: hidden !important;}
 footer {visibility: hidden !important; display: none !important;}
 [data-testid="stToolbar"] {display: none !important;}
 [data-testid="manage-app-button"] {display: none !important;}
 [data-testid="viewerBadge"] {display: none !important;}
+.stDeployButton {display: none !important;}
+[class^="viewerBadge"] { display: none !important; }
+[class*="viewerBadge"] { display: none !important; }
+[class*="manage-app"] { display: none !important; }
+
 .header-bar {
-    background: linear-gradient(135deg, #2b2b2b 0%, #1a1a1a 100%);
+    background: linear-gradient(135deg, #8b0000 0%, #a02020 50%, #8b0000 100%);
     color: white;
     padding: 15px 20px;
     border-radius: 0 0 15px 15px;
@@ -46,22 +53,94 @@ footer {visibility: hidden !important; display: none !important;}
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
-.header-bar h1 { margin: 0; font-size: 1.5rem; color: #d4af37; }
-.header-bar span { font-size: 0.9rem; color: #a0a0a0; }
-.product-card {
-    background: white;
+
+.card {
+    background: linear-gradient(145deg, #1a1a24 0%, #222230 100%);
     border-radius: 12px;
     padding: 15px;
-    margin-bottom: 15px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    border-left: 4px solid #d4af37;
+    color: white;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    border: 1px solid #333;
+    margin-bottom: 10px;
+    position: relative;
 }
-.price-cost { color: #8b0000; font-weight: 700; font-size: 1.1em; }
-.price-pvp { color: #666; font-size: 0.8em; text-decoration: line-through; }
+
+.cart-badge {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: #d4af37;
+    color: #000;
+    font-weight: 800;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    z-index: 10;
+}
+
+.prod-name { font-size: 1.2rem; font-weight: 700; color: #d4af37; margin-bottom: 8px; }
+.price-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.price-label { font-size: 0.8rem; color: #a0a0b0; text-transform: uppercase; letter-spacing: 0.5px; }
+.price-main { font-size: 1.4rem; font-weight: 800; color: #fff; }
+.price-pvp { text-align: right; }
+.price-pvp-value { font-size: 1.1rem; color: #d4af37; font-weight: 600; }
+.gain-badge {
+    background: rgba(212, 175, 55, 0.1);
+    color: #d4af37;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: center;
+    margin-top: 5px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+}
 </style>
 """, unsafe_allow_html=True)
+
+# --- UTILIDADES PARA IMÁGENES ---
+def buscar_imagenes(nombre_producto):
+    import glob
+    import unicodedata
+    import re
+    def normalizar(t):
+        t = unicodedata.normalize('NFKD', t).encode('ASCII', 'ignore').decode('utf-8')
+        return re.sub(r'[^a-zA-Z0-9]', '', t).lower()
+    
+    img_dir = os.path.join(current_dir, "images")
+    if not os.path.exists(img_dir):
+        return None, None
+        
+    nombre_norm = normalizar(nombre_producto)
+    archivos = glob.glob(os.path.join(img_dir, "*"))
+    
+    img_front = None
+    img_back = None
+    for arc in archivos:
+        filename = os.path.basename(arc).lower()
+        fn_norm = normalizar(os.path.splitext(filename)[0])
+        if "frontal" in fn_norm and nombre_norm in fn_norm.replace("frontal", ""):
+            img_front = arc
+        elif "dorso" in fn_norm and nombre_norm in fn_norm.replace("dorso", ""):
+            img_back = arc
+    return img_front, img_back
+
+def detectar_categoria(nombre):
+    n = nombre.lower()
+    if "sal" in n or "sales" in n: return "🧂 Sales"
+    if "blend" in n: return "🌿 Blends"
+    if "vital" in n: return "💚 Vital"
+    if "te " in n or "té " in n or n.startswith("te ") or n.startswith("té "): return "🍵 Tés"
+    if "mocktail" in n: return "🍹 Mocktails"
+    if "pimienta" in n: return "🌶️ Pimientas"
+    return "🏠 Otros"
 
 # --- ESTADO INICIAL ---
 if 'carrito' not in st.session_state:
@@ -74,11 +153,11 @@ if 'margen_global' not in st.session_state:
 # --- IDENTIFICACIÓN DEL VENDEDOR ---
 if not st.session_state.vendedor_nombre:
     st.markdown("<br><br>", unsafe_allow_html=True)
-    st.markdown("<h2 style='text-align:center; color:#2b2b2b;'>👋 Bienvenido a Preventa</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align:center; color:#d4af37;'>👋 Bienvenido a Preventa</h2>", unsafe_allow_html=True)
     with st.container():
-        st.markdown("<div style='background:white; padding:20px; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.1); max-width:400px; margin:auto;'>", unsafe_allow_html=True)
-        nombre_input = st.text_input("Ingresá tu nombre para tomar pedidos:")
-        if st.button("Ingresar", type="primary", use_container_width=True):
+        st.markdown("<div style='background:#1a1a24; padding:20px; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.5); max-width:400px; margin:auto; color:white; border:1px solid #333;'>", unsafe_allow_html=True)
+        nombre_input = st.text_input("Ingresá tu nombre para tomar pedidos:", placeholder="Ej: Juan Pérez")
+        if st.button("Ingresar al Catálogo", type="primary", use_container_width=True):
             if nombre_input:
                 st.session_state.vendedor_nombre = nombre_input
                 st.rerun()
@@ -89,30 +168,44 @@ if not st.session_state.vendedor_nombre:
 
 # --- HEADER COMPACTO ---
 total_items = sum(item['cantidad'] for item in st.session_state.carrito.values())
-st.markdown(f"""
-<div class='header-bar'>
-    <div>
-        <h1>👤 {st.session_state.vendedor_nombre}</h1>
-        <span>Preventa · Rojo Malbec</span>
-    </div>
-    <div style='text-align:right;'>
-        <span style='font-size:1.5em;'>🛒 {total_items}</span>
-    </div>
-</div>
-""", unsafe_allow_html=True)
+col_logo, col_titulo, col_cart = st.columns([1, 4, 2])
+with col_logo:
+    ruta_logo = os.path.join(current_dir, "logo.png")
+    if os.path.exists(ruta_logo):
+        st.image(ruta_logo, use_container_width=True)
+    else:
+        st.markdown("<h1 style='text-align:center;'>🍷</h1>", unsafe_allow_html=True)
+
+with col_titulo:
+    st.markdown(f"""
+        <div style='padding-top: 10px;'>
+            <h1 style='margin:0; font-size:2rem; color:#d4af37;'>Rojo Malbec</h1>
+            <span style='color:#a0a0b0; font-size:1.1rem;'>Herramienta de Preventa - 👤 {st.session_state.vendedor_nombre}</span>
+        </div>
+    """, unsafe_allow_html=True)
+
+with col_cart:
+    st.markdown(f"""
+        <div style='text-align:right; padding-top: 15px;'>
+            <span style='font-size:1.8em; font-weight:800; color:#d4af37;'>🛒 {total_items}</span><br>
+            <span style='color:#a0a0b0;'>productos</span>
+        </div>
+    """, unsafe_allow_html=True)
+
+st.markdown("<hr style='margin-top:0; border-color:#333;'>", unsafe_allow_html=True)
 
 # --- CALCULADORA GLOBAL DE MARGEN ---
-with st.expander("🧮 Configurar Margen de Ganancia", expanded=False):
-    st.markdown("Elegí el porcentaje de ganancia base. Se aplicará a todos los productos como sugerencia, pero podés cambiar el precio manualmente en cada uno.")
-    nuevo_margen = st.slider("Margen sugerido (%)", min_value=0, max_value=100, value=st.session_state.margen_global, step=5)
+with st.expander("🧮 CALCULADORA DE GANANCIAS (Margen Base)", expanded=False):
+    st.markdown("Elegí el porcentaje de ganancia base. Se aplicará a todo el catálogo como sugerencia, pero podés ajustar el precio manualmente debajo de cada producto.")
+    nuevo_margen = st.slider("Margen sugerido (%)", min_value=0, max_value=150, value=st.session_state.margen_global, step=5)
     if nuevo_margen != st.session_state.margen_global:
         st.session_state.margen_global = nuevo_margen
         st.rerun()
 
 # --- CARRITO INTEGRADO ---
 if total_items > 0:
-    with st.expander(f"🛒 VER PEDIDO ({total_items} productos)", expanded=False):
-        st.markdown("### 📝 Resumen")
+    with st.expander(f"🛒 VER MI PEDIDO ({total_items} productos)", expanded=False):
+        st.markdown("### 📝 Resumen del Pedido")
         total_costo = 0
         total_venta = 0
         items_carrito = []
@@ -129,13 +222,13 @@ if total_items > 0:
                 with cols_cart[0]:
                     st.write(f"{item_data['cantidad']} un. a ${item_data['precio_venta']:,}")
                 with cols_cart[1]:
-                    if st.button("➖", key=f"del_{nombre}_cart"):
+                    if st.button("➖", key=f"del_{nombre}_cart_main"):
                         st.session_state.carrito[nombre]['cantidad'] -= 1
                         if st.session_state.carrito[nombre]['cantidad'] <= 0:
                             del st.session_state.carrito[nombre]
                         st.rerun()
                 with cols_cart[2]:
-                    if st.button("➕", key=f"add_{nombre}_cart"):
+                    if st.button("➕", key=f"add_{nombre}_cart_main"):
                         st.session_state.carrito[nombre]['cantidad'] += 1
                         st.rerun()
                 st.markdown("---")
@@ -174,74 +267,126 @@ if total_items > 0:
                 st.rerun()
 
 # --- CARGAR CATÁLOGO ---
-with st.spinner("Cargando catálogo..."):
+with st.spinner("Actualizando catálogo..."):
     df_catalogo = load_catalog_data()
 
 if df_catalogo.empty:
-    st.error("No se pudo cargar el catálogo.")
+    st.error("No se pudo cargar el catálogo. Contacte a administración.")
     st.stop()
 
-# Filtramos solo los visibles
+df_catalogo["Categoria"] = df_catalogo["Nombre"].apply(detectar_categoria)
+
+# Filtramos solo los visibles (Comparte base con B2B)
 df_catalogo = df_catalogo[df_catalogo["Visible_B2B"] == True]
 
 # --- BUSCADOR ---
-search = st.text_input("🔍 Buscar...", placeholder="Ej: Sal, Curry...", label_visibility="collapsed")
+search = st.text_input("🔍 Buscar producto...", placeholder="Ej: Sal, Curry...", label_visibility="collapsed")
 
-if search:
-    df_catalogo = df_catalogo[df_catalogo["Nombre"].str.contains(search, case=False)]
+# --- CATÁLOGO POR PESTAÑAS (CLON B2B) ---
+categorias = ["🏠 Todos", "🧂 Sales", "🌿 Blends", "💚 Vital", "🍵 Tés", "🍹 Mocktails", "🌶️ Pimientas"]
+tabs = st.tabs(categorias)
 
-st.markdown("<br>", unsafe_allow_html=True)
-
-# --- LISTADO DE PRODUCTOS (PREVENTA) ---
-for idx, row in df_catalogo.reset_index(drop=True).iterrows():
-    nombre = row["Nombre"]
-    costo_mayorista = float(row["Precio_Mayorista"])
-    pvp_sugerido = costo_mayorista * (1 + float(row["Markup_Revendedor"]) / 100) if float(row["Markup_Revendedor"]) > 0 else 0
-    
-    # Precio sugerido basado en el slider global
-    precio_sugerido = round(costo_mayorista * (1 + (st.session_state.margen_global / 100)))
-    
-    qty_actual = 0
-    precio_venta_actual = precio_sugerido
-    if nombre in st.session_state.carrito:
-        qty_actual = st.session_state.carrito[nombre]["cantidad"]
-        precio_venta_actual = st.session_state.carrito[nombre]["precio_venta"]
-    
-    with st.container():
-        st.markdown(f"""<div class='product-card'>
-            <h3 style='margin:0; color:#2b2b2b; font-size:1.1rem;'>{nombre}</h3>
-            <span class='price-cost'>Costo: ${costo_mayorista:,.0f}</span>
-            {f"<span class='price-pvp'> | Tope sugerido: ${pvp_sugerido:,.0f}</span>" if pvp_sugerido > 0 else ""}
-        </div>""", unsafe_allow_html=True)
+for i, tab in enumerate(tabs):
+    with tab:
+        cat_actual = categorias[i]
         
-        col_precio, col_btn = st.columns([3, 2])
+        df_tab = df_catalogo.copy()
+        if cat_actual != "🏠 Todos":
+            df_tab = df_tab[df_tab["Categoria"] == cat_actual]
+            
+        if search:
+            df_tab = df_tab[df_tab["Nombre"].str.contains(search, case=False)]
+            
+        if df_tab.empty:
+            st.info("No hay productos en esta categoría.")
+            continue
         
-        with col_precio:
-            # Si ya está en el carrito, bloqueamos el input para evitar bugs visuales, o lo dejamos editar
-            if qty_actual > 0:
-                st.markdown(f"<div style='padding-top:10px;'>Cerrado a: <b>${precio_venta_actual:,}</b></div>", unsafe_allow_html=True)
+        cols = st.columns(2)
+        for idx, row in df_tab.reset_index(drop=True).iterrows():
+            nombre = row["Nombre"]
+            costo_mayorista = float(row["Precio_Mayorista"])
+            costo_redondeado = redondear_precio(costo_mayorista)
+            
+            # PVP: Tope de góndola
+            pvp_guardado = float(row.get("PVP_Sugerido", 0))
+            if pvp_guardado > 0:
+                pvp_final = pvp_guardado
             else:
-                # El vendedor tipea el precio final
-                precio_input = st.number_input("Cobrar al cliente:", min_value=int(costo_mayorista), value=int(precio_sugerido), step=100, key=f"precio_{idx}", label_visibility="collapsed")
-        
-        with col_btn:
-            if qty_actual == 0:
-                if st.button("🛒 AGREGAR", key=f"add_{idx}", use_container_width=True, type="primary"):
-                    st.session_state.carrito[nombre] = {"cantidad": 1, "costo": costo_mayorista, "precio_venta": precio_input}
-                    st.session_state.sidebar_state = "expanded"
-                    st.rerun()
-            else:
-                c1, c2, c3 = st.columns([1, 2, 1])
-                with c1:
-                    if st.button("➖", key=f"minus_{idx}", use_container_width=True):
-                        st.session_state.carrito[nombre]['cantidad'] -= 1
-                        if st.session_state.carrito[nombre]['cantidad'] == 0:
-                            del st.session_state.carrito[nombre]
+                markup_revendedor = float(row.get("Markup_Revendedor", 0))
+                if markup_revendedor > 0:
+                    pvp_final = costo_mayorista * (1 + markup_revendedor / 100)
+                else:
+                    pvp_final = costo_mayorista * 1.5
+            pvp_redondeado = redondear_precio(pvp_final)
+            
+            # Calculamos sugerido del vendedor
+            precio_sugerido = redondear_precio(costo_redondeado * (1 + (st.session_state.margen_global / 100)))
+            
+            desc_path = os.path.join(current_dir, "Descripciones_RojoMalbec.md")
+            descripcion = extraer_descripcion(nombre, desc_path)
+            img_front, img_back = buscar_imagenes(nombre)
+            
+            qty_actual = 0
+            precio_venta_actual = precio_sugerido
+            if nombre in st.session_state.carrito:
+                qty_actual = st.session_state.carrito[nombre]["cantidad"]
+                precio_venta_actual = st.session_state.carrito[nombre]["precio_venta"]
+            
+            col_idx = idx % 2
+            with cols[col_idx]:
+                badge_html = f"<div class='cart-badge'>{qty_actual}</div>" if qty_actual > 0 else ""
+                html_card = f"""<div class='card'>
+{badge_html}
+<div class='prod-name'>{nombre}</div>
+<div class='price-row'>
+<div>
+<div class='price-label'>Tu Costo Mayorista</div>
+<div class='price-main'>$ {costo_redondeado:,}</div>
+</div>
+<div class='price-pvp'>
+<div class='price-label'>PVP Sugerido en Góndola</div>
+<div class='price-pvp-value'>$ {pvp_redondeado:,}</div>
+</div>
+</div>
+</div>"""
+                st.markdown(html_card, unsafe_allow_html=True)
+                
+                # --- HERRAMIENTAS DE VENDEDOR ---
+                st.markdown("<div style='background:#f0f2f6; padding:10px; border-radius:8px; margin-top:-10px; margin-bottom:10px; color:#333;'>", unsafe_allow_html=True)
+                
+                if qty_actual > 0:
+                    st.markdown(f"Vendido a cliente: <b>${precio_venta_actual:,}</b>", unsafe_allow_html=True)
+                else:
+                    # Input de precio
+                    st.markdown("<b>Precio final al cliente ($)</b>", unsafe_allow_html=True)
+                    precio_input = st.number_input("Precio", min_value=int(costo_redondeado), value=int(precio_sugerido), step=100, key=f"precio_{cat_actual}_{idx}", label_visibility="collapsed")
+                
+                # Botones de carrito
+                if qty_actual == 0:
+                    if st.button(f"🛒 AGREGAR AL PEDIDO", key=f"add_{cat_actual}_{idx}", use_container_width=True, type="primary"):
+                        st.session_state.carrito[nombre] = {"cantidad": 1, "costo": costo_redondeado, "precio_venta": precio_input}
+                        st.session_state.sidebar_state = "expanded"
                         st.rerun()
-                with c2:
-                    st.markdown(f"<div style='text-align:center; padding:6px; font-weight:800;'>{qty_actual}</div>", unsafe_allow_html=True)
-                with c3:
-                    if st.button("➕", key=f"plus_{idx}", use_container_width=True, type="primary"):
-                        st.session_state.carrito[nombre]['cantidad'] += 1
-                        st.rerun()
-        st.markdown("<hr style='margin:10px 0; border-color:#ddd;'>", unsafe_allow_html=True)
+                else:
+                    c1, c2, c3 = st.columns([1, 2, 1])
+                    with c1:
+                        if st.button("➖", key=f"minus_{cat_actual}_{idx}", use_container_width=True):
+                            st.session_state.carrito[nombre]['cantidad'] -= 1
+                            if st.session_state.carrito[nombre]['cantidad'] == 0:
+                                del st.session_state.carrito[nombre]
+                            st.rerun()
+                    with c2:
+                        st.markdown(f"<div style='text-align:center; padding:6px; font-weight:800; color:#1a1a24;'>{qty_actual} un.</div>", unsafe_allow_html=True)
+                    with c3:
+                        if st.button("➕", key=f"plus_{cat_actual}_{idx}", use_container_width=True, type="primary"):
+                            st.session_state.carrito[nombre]['cantidad'] += 1
+                            st.rerun()
+                st.markdown("</div>", unsafe_allow_html=True)
+                
+                # Imágenes
+                if img_front:
+                    st.image(img_front, use_container_width=True)
+                if descripcion:
+                    with st.expander("Ver ingredientes"):
+                        st.markdown(descripcion)
+                st.markdown("<br>", unsafe_allow_html=True)
