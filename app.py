@@ -397,7 +397,10 @@ for i, tab in enumerate(tabs):
                 else:
                     # Input de precio
                     st.markdown("<b>Precio final al cliente ($)</b>", unsafe_allow_html=True)
-                    precio_input = st.number_input("Precio", min_value=int(costo_redondeado), value=int(precio_sugerido), step=100, key=f"precio_{cat_actual}_{idx}", label_visibility="collapsed")
+                    # El truco maestro: Le sumamos el margen al nombre oculto de la cajita. 
+                    # Así cuando cambia el slide, la app cree que es una cajita nueva y toma el valor fresco.
+                    dynamic_key = f"precio_{cat_actual}_{idx}_{st.session_state.margen_global}"
+                    precio_input = st.number_input("Precio", min_value=int(costo_redondeado), value=int(precio_sugerido), step=100, key=dynamic_key, label_visibility="collapsed")
                 
                 # Botones de carrito
                 if qty_actual == 0:
