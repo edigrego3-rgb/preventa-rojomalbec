@@ -3,8 +3,33 @@ import urllib.parse
 def redondear_precio(precio):
     return round(precio)
 
-def extraer_descripcion(nombre_producto):
-    return ""  # Podemos agregar la lógica del markdown después si la necesitan en preventa
+def extraer_descripcion(nombre_producto, filepath):
+    import os
+    if not os.path.exists(filepath):
+        return ""
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            contenido = f.read()
+            
+        bloques = contenido.split("---")
+        for bloque in bloques:
+            lineas = [l.strip() for l in bloque.strip().split("\n") if l.strip()]
+            if not lineas:
+                continue
+                
+            nombre_bloque = lineas[0].replace("#", "").strip()
+            
+            import unicodedata
+            import re
+            def norm(t):
+                t = unicodedata.normalize('NFKD', t).encode('ASCII', 'ignore').decode('utf-8')
+                return re.sub(r'[^a-zA-Z0-9]', '', t).lower()
+                
+            if norm(nombre_producto) in norm(nombre_bloque):
+                return "\n".join(lineas[1:])
+    except:
+        pass
+    return ""
 
 def generar_mensaje_whatsapp(carrito, total_costo, total_venta, telefono, datos_vendedor):
     """
