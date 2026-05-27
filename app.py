@@ -107,30 +107,64 @@ footer {visibility: hidden !important; display: none !important;}
 
 # --- UTILIDADES PARA IMÁGENES ---
 def buscar_imagenes(nombre_producto):
-    import glob
-    import unicodedata
-    import re
-    def normalizar(t):
-        t = unicodedata.normalize('NFKD', t).encode('ASCII', 'ignore').decode('utf-8')
-        return re.sub(r'[^a-zA-Z0-9]', '', t).lower()
-    
     img_dir = os.path.join(current_dir, "images")
     if not os.path.exists(img_dir):
         return None, None
         
-    nombre_norm = normalizar(nombre_producto)
-    archivos = glob.glob(os.path.join(img_dir, "*"))
+    term = nombre_producto.lower()
     
-    img_front = None
-    img_back = None
-    for arc in archivos:
-        filename = os.path.basename(arc).lower()
-        fn_norm = normalizar(os.path.splitext(filename)[0])
-        if "frontal" in fn_norm and nombre_norm in fn_norm.replace("frontal", ""):
-            img_front = arc
-        elif "dorso" in fn_norm and nombre_norm in fn_norm.replace("dorso", ""):
-            img_back = arc
-    return img_front, img_back
+    # --- DICCIONARIO INTELIGENTE ---
+    if "sloopy joe" in term or "sloppy" in term: term = "sloppyjoe"
+    elif "sal al malbec" in term: term = "malbec"
+    elif "sal negra" in term or "hawaiana" in term: term = "hawaiana"
+    elif "ajo a las hierbas" in term: term = "ajohierbas"
+    elif "bbq" in term or "barbacoa" in term: term = "barbacoa"
+    elif "bosque y brasas" in term: term = "bosque"
+    elif "kebab" in term: term = "kebab"
+    elif "panko" in term or "sesamo y limon" in term: term = "sesamo"
+    elif "españa profunda" in term or "espana" in term: term = "espana"
+    elif "glühwein" in term or "gluhwein" in term: term = "gluhwein"
+    elif "mocktail" in term: term = "botanico"
+    elif "panch" in term: term = "panch"
+    elif "criolla deshidratada" in term: term = "criolla"
+    elif "rooibos" in term: term = "rooibos"
+    elif "sal british" in term: term = "british"
+    elif "esvanetian" in term: term = "svanetian"
+    elif "rosas y romero" in term: term = "rosas"
+    elif "del desierto" in term: term = "desierto"
+    elif "vikinga" in term: term = "vikinga"
+    elif "limon y chile" in term: term = "limonchile"
+    elif "queso" in term: term = "queso"
+    elif "parrilera" in term: term = "parrilera"
+    elif "pimienta negra" in term: term = "pimientanegra"
+    elif "pimienta roja" in term: term = "pimientaroja"
+    elif "pimienta verde" in term: term = "pimientaverde"
+    elif "jerk" in term: term = "jerk"
+    elif "nanami" in term: term = "nanami"
+    elif "pesto" in term: term = "pesto"
+    elif "za'atar" in term or "zaatar" in term: term = "zaatar"
+    else:
+        term = term.replace(" ", "")
+        
+    term = term.replace("&", "").replace("(", "").replace(")", "").replace("ñ", "n").replace("ü", "u").replace("'", "").replace("ō", "o")
+    
+    archivos_validos = []
+    for f in os.listdir(img_dir):
+        f_limpio = f.lower().replace("ñ", "n")
+        if "trasera" in f_limpio or "back" in f_limpio:
+            continue
+        f_sin_espacios = f_limpio.replace("_", "").replace(" ", "")
+        if term in f_sin_espacios or term in f_limpio.replace("_", " "):
+            archivos_validos.append(f)
+            
+    if not archivos_validos:
+        return None, None
+        
+    for f in archivos_validos:
+        if "clean" in f.lower() or "frontal" in f.lower() or "color" in f.lower() or "premium" in f.lower():
+            return os.path.join(img_dir, f), None
+            
+    return os.path.join(img_dir, archivos_validos[0]), None
 
 def detectar_categoria(nombre):
     n = nombre.lower()
