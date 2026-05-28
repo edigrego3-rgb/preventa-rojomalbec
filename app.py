@@ -256,18 +256,16 @@ if total_items > 0:
                 total_venta += sub_venta
                 
                 st.markdown(f"**{nombre}**")
-                cols_cart = st.columns([2, 1, 1])
+                cols_cart = st.columns([2, 2])
                 with cols_cart[0]:
-                    st.write(f"{item_data['cantidad']} un. a ${item_data['precio_venta']:,}")
+                    st.write(f"A ${item_data['precio_venta']:,} c/u")
                 with cols_cart[1]:
-                    if st.button("➖", key=f"del_{nombre}_cart_main"):
-                        st.session_state.carrito[nombre]['cantidad'] -= 1
-                        if st.session_state.carrito[nombre]['cantidad'] <= 0:
+                    new_qty = st.number_input("Unidades", min_value=0, max_value=999, value=item_data['cantidad'], step=1, key=f"cart_{nombre}", label_visibility="collapsed")
+                    if new_qty != item_data['cantidad']:
+                        if new_qty == 0:
                             del st.session_state.carrito[nombre]
-                        st.rerun()
-                with cols_cart[2]:
-                    if st.button("➕", key=f"add_{nombre}_cart_main"):
-                        st.session_state.carrito[nombre]['cantidad'] += 1
+                        else:
+                            st.session_state.carrito[nombre]['cantidad'] = new_qty
                         st.rerun()
                 st.markdown("---")
                 
@@ -409,19 +407,13 @@ for i, tab in enumerate(tabs):
                         st.session_state.sidebar_state = "expanded"
                         st.rerun()
                 else:
-                    c1, c2, c3 = st.columns([1, 2, 1])
-                    with c1:
-                        if st.button("➖", key=f"minus_{cat_actual}_{idx}", use_container_width=True):
-                            st.session_state.carrito[nombre]['cantidad'] -= 1
-                            if st.session_state.carrito[nombre]['cantidad'] == 0:
-                                del st.session_state.carrito[nombre]
-                            st.rerun()
-                    with c2:
-                        st.markdown(f"<div style='text-align:center; padding:6px; font-weight:800; color:#1a1a24;'>{qty_actual} un.</div>", unsafe_allow_html=True)
-                    with c3:
-                        if st.button("➕", key=f"plus_{cat_actual}_{idx}", use_container_width=True, type="primary"):
-                            st.session_state.carrito[nombre]['cantidad'] += 1
-                            st.rerun()
+                    new_qty = st.number_input("Cantidad", min_value=0, max_value=999, value=qty_actual, step=1, key=f"qty_{cat_actual}_{idx}", label_visibility="collapsed")
+                    if new_qty != qty_actual:
+                        if new_qty == 0:
+                            del st.session_state.carrito[nombre]
+                        else:
+                            st.session_state.carrito[nombre]['cantidad'] = new_qty
+                        st.rerun()
                 st.markdown("</div>", unsafe_allow_html=True)
                 
                 # Imágenes
