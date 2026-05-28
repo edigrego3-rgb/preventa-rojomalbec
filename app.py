@@ -397,36 +397,39 @@ for i, tab in enumerate(tabs):
                 st.markdown("<div style='background:#f0f2f6; padding:10px; border-radius:8px; margin-top:-10px; margin-bottom:10px; color:#333;'>", unsafe_allow_html=True)
                 
                 if qty_actual > 0:
+                    # YA ESTÁ EN EL CARRITO
                     st.markdown(f"Vendido a cliente: <b>${precio_venta_actual:,}</b>", unsafe_allow_html=True)
+                    st.markdown(f"<b>En pedido: {qty_actual} unidades</b>", unsafe_allow_html=True)
+                    
+                    # Selector para cambiar cantidad
+                    opciones_qty = list(range(1, 101))
+                    idx_actual = opciones_qty.index(qty_actual) if qty_actual in opciones_qty else 0
+                    
+                    col_qty, col_btn = st.columns([1, 1])
+                    with col_qty:
+                        nueva_cant = st.selectbox("Cambiar cantidad", options=opciones_qty, index=idx_actual, key=f"qty_{cat_actual}_{idx}", label_visibility="collapsed")
+                    with col_btn:
+                        if st.button("✅ Actualizar", key=f"upd_{cat_actual}_{idx}", use_container_width=True):
+                            st.session_state.carrito[nombre]['cantidad'] = nueva_cant
+                            st.rerun()
+                    
+                    if st.button("🗑️ Quitar del pedido", key=f"del_{cat_actual}_{idx}", use_container_width=True):
+                        del st.session_state.carrito[nombre]
+                        st.rerun()
                 else:
-                    # Input de precio
+                    # NO ESTÁ EN EL CARRITO - Primero elige precio y cantidad, después confirma
                     st.markdown("<b>Precio final al cliente ($)</b>", unsafe_allow_html=True)
-                    # El truco maestro: Le sumamos el margen al nombre oculto de la cajita. 
-                    # Así cuando cambia el slide, la app cree que es una cajita nueva y toma el valor fresco.
                     dynamic_key = f"precio_{cat_actual}_{idx}_{st.session_state.margen_global}"
                     precio_input = st.number_input("Precio", min_value=int(costo_redondeado), value=int(precio_sugerido), step=100, key=dynamic_key, label_visibility="collapsed")
+                    
+                    col_qty, col_btn = st.columns([1, 2])
+                    with col_qty:
+                        cant_elegida = st.selectbox("Cantidad", options=list(range(1, 101)), index=0, key=f"selqty_{cat_actual}_{idx}", label_visibility="collapsed")
+                    with col_btn:
+                        if st.button(f"🛒 AGREGAR ({cant_elegida} un.)", key=f"add_{cat_actual}_{idx}", use_container_width=True, type="primary"):
+                            st.session_state.carrito[nombre] = {"cantidad": cant_elegida, "costo": costo_redondeado, "precio_venta": precio_input}
+                            st.rerun()
                 
-                # Botones de carrito
-                if qty_actual == 0:
-                    if st.button(f"🛒 AGREGAR AL PEDIDO", key=f"add_{cat_actual}_{idx}", use_container_width=True, type="primary"):
-                        st.session_state.carrito[nombre] = {"cantidad": 1, "costo": costo_redondeado, "precio_venta": precio_input}
-                        st.session_state.sidebar_state = "expanded"
-                        st.rerun()
-                else:
-                    # Lista desplegable como sugirió el amigo! Mucho mejor para celulares.
-                    opciones_qty = list(range(0, 101)) # Del 0 al 100
-                    # Asegurar que el qty_actual esté en la lista, por si acaso
-                    if qty_actual not in opciones_qty:
-                        opciones_qty.append(qty_actual)
-                        opciones_qty.sort()
-                        
-                    new_qty = st.selectbox("Cantidad", options=opciones_qty, index=opciones_qty.index(qty_actual), key=f"qty_{cat_actual}_{idx}", label_visibility="collapsed")
-                    if new_qty != qty_actual:
-                        if new_qty == 0:
-                            del st.session_state.carrito[nombre]
-                        else:
-                            st.session_state.carrito[nombre]['cantidad'] = new_qty
-                        st.rerun()
                 st.markdown("</div>", unsafe_allow_html=True)
                 
                 # Imágenes
