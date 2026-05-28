@@ -381,15 +381,12 @@ for i, tab in enumerate(tabs):
 {badge_html}
 <div class='prod-name'>{nombre}</div>
 <div class='price-row'>
-<div>
-<div class='price-label'>Tu Costo Mayorista</div>
-<div class='price-main'>$ {costo_redondeado:,}</div>
-</div>
 <div class='price-pvp'>
 <div class='price-label'>PVP Sugerido en Góndola</div>
 <div class='price-pvp-value'>$ {pvp_redondeado:,}</div>
 </div>
 </div>
+<div style='font-size:0.7em; color:#555; margin-top:4px;'>Ref: $ {costo_redondeado:,}</div>
 </div>"""
                 st.markdown(html_card, unsafe_allow_html=True)
                 
