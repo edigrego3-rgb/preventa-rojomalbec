@@ -260,7 +260,13 @@ if total_items > 0:
                 with cols_cart[0]:
                     st.write(f"A ${item_data['precio_venta']:,} c/u")
                 with cols_cart[1]:
-                    new_qty = st.number_input("Unidades", min_value=0, max_value=999, value=item_data['cantidad'], step=1, key=f"cart_{nombre}", label_visibility="collapsed")
+                    # Selectbox también en el carrito
+                    opciones_cart = list(range(0, 101))
+                    if item_data['cantidad'] not in opciones_cart:
+                        opciones_cart.append(item_data['cantidad'])
+                        opciones_cart.sort()
+                        
+                    new_qty = st.selectbox("Unidades", options=opciones_cart, index=opciones_cart.index(item_data['cantidad']), key=f"cart_{nombre}", label_visibility="collapsed")
                     if new_qty != item_data['cantidad']:
                         if new_qty == 0:
                             del st.session_state.carrito[nombre]
@@ -407,7 +413,14 @@ for i, tab in enumerate(tabs):
                         st.session_state.sidebar_state = "expanded"
                         st.rerun()
                 else:
-                    new_qty = st.number_input("Cantidad", min_value=0, max_value=999, value=qty_actual, step=1, key=f"qty_{cat_actual}_{idx}", label_visibility="collapsed")
+                    # Lista desplegable como sugirió el amigo! Mucho mejor para celulares.
+                    opciones_qty = list(range(0, 101)) # Del 0 al 100
+                    # Asegurar que el qty_actual esté en la lista, por si acaso
+                    if qty_actual not in opciones_qty:
+                        opciones_qty.append(qty_actual)
+                        opciones_qty.sort()
+                        
+                    new_qty = st.selectbox("Cantidad", options=opciones_qty, index=opciones_qty.index(qty_actual), key=f"qty_{cat_actual}_{idx}", label_visibility="collapsed")
                     if new_qty != qty_actual:
                         if new_qty == 0:
                             del st.session_state.carrito[nombre]
