@@ -168,12 +168,25 @@ def buscar_imagenes(nombre_producto):
 
 def detectar_categoria(nombre):
     n = nombre.lower()
+    
+    # Excepciones que no dicen "sal" pero son sales
+    if "svanetian" in n or "vikinga" in n or "hawaiana" in n: return "🧂 Sales"
+    
     if "sal" in n or "sales" in n: return "🧂 Sales"
-    if "blend" in n: return "🥘 Blends"
     if "vital" in n: return "💚 Vital"
-    if "te " in n or "té " in n or n.startswith("te ") or n.startswith("té "): return "🍵 Tés"
-    if "mocktail" in n: return "🍹 Mocktails"
+    if "te " in n or "té " in n or n.startswith("te ") or n.startswith("té ") or "rooibos" in n: return "🍵 Tés"
+    if "mocktail" in n or "botanico" in n: return "🍹 Mocktails"
     if "pimienta" in n: return "🌶️ Pimientas"
+    
+    # Blends conocidos
+    blends_conocidos = [
+        "blend", "ajo", "barbacoa", "bbq", "bosque", "kebab", "panko", "sésamo", "sesamo", 
+        "españa", "espana", "glühwein", "gluhwein", "panch", "criolla", "jerk", 
+        "nanami", "pesto", "za'atar", "zaatar", "chimichurri", "queso", "provenzal", "rub"
+    ]
+    if any(b in n for b in blends_conocidos):
+        return "🥘 Blends"
+        
     return "🏠 Otros"
 
 # --- ESTADO INICIAL ---
