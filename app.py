@@ -166,28 +166,22 @@ def buscar_imagenes(nombre_producto):
             
     return os.path.join(img_dir, archivos_validos[0]), None
 
-def detectar_categoria(nombre):
-    n = nombre.lower()
-    
-    # Excepciones que no dicen "sal" pero son sales
-    if "svanetian" in n or "vikinga" in n or "hawaiana" in n: return "🧂 Sales"
-    
-    if "sal" in n or "sales" in n: return "🧂 Sales"
-    if "vital" in n: return "💚 Vital"
-    if "te " in n or "té " in n or n.startswith("te ") or n.startswith("té ") or "rooibos" in n: return "🍵 Tés"
-    if "mocktail" in n or "botanico" in n: return "🍹 Mocktails"
-    if "pimienta" in n: return "🌶️ Pimientas"
-    
-    # Blends conocidos
-    blends_conocidos = [
-        "blend", "ajo", "barbacoa", "bbq", "bosque", "kebab", "panko", "sésamo", "sesamo", 
-        "españa", "espana", "glühwein", "gluhwein", "panch", "criolla", "jerk", 
-        "nanami", "pesto", "za'atar", "zaatar", "chimichurri", "queso", "provenzal", "rub"
-    ]
-    if any(b in n for b in blends_conocidos):
+def detectar_categoria(nombre_producto):
+    nombre = str(nombre_producto).lower()
+    if "sal " in nombre or nombre.startswith("sal") or "svanetian" in nombre or "vikinga" in nombre or "hawaiana" in nombre:
+        return "🧂 Sales"
+    elif "vital" in nombre:
+        return "💚 Vital"
+    elif "blend" in nombre or "bbq" in nombre or "curry" in nombre or "baharat" in nombre or "masala" in nombre or "joe" in nombre or "ranch" in nombre or "pesto" in nombre or "jerk" in nombre or "panko" in nombre or "criolla" in nombre or "muddica" in nombre or "nanami" in nombre or "panch phoron" in nombre or "vadouvan" in nombre or "españa" in nombre or "mexicano" in nombre or "glühwein" in nombre:
         return "🥘 Blends"
-        
-    return "🏠 Otros"
+    elif "te " in nombre or "té " in nombre or nombre.startswith("te ") or nombre.startswith("té ") or " rooibos" in nombre or nombre.startswith("rooibos") or " karak" in nombre or nombre.startswith("karak"):
+        return "🍵 Tés"
+    elif "mocktail" in nombre:
+        return "🍹 Mocktails"
+    elif "pimienta" in nombre:
+        return "🌶️ Pimientas"
+    else:
+        return "🥘 Blends"
 
 # --- ESTADO INICIAL ---
 if 'carrito' not in st.session_state:
