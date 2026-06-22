@@ -10,6 +10,7 @@ if current_dir not in sys.path:
 
 from modules.data_manager import load_catalog_data, guardar_visibilidad
 from modules.utils import redondear_precio, extraer_descripcion, generar_mensaje_whatsapp
+from modules.pdf_generator import crear_pdf_catalogo
 
 # --- CONFIGURACIÓN DE PÁGINA ---
 if "sidebar_state" not in st.session_state:
@@ -246,6 +247,23 @@ with st.expander("🧮 CALCULADORA DE GANANCIAS (Margen Base)", expanded=False):
             if key.startswith("precio_"):
                 del st.session_state[key]
         st.rerun()
+        
+    st.markdown("---")
+    logo_path = os.path.join(current_dir, "images", "logo.png")
+    pdf_path = os.path.join(current_dir, "catalogo_temp.pdf")
+    try:
+        crear_pdf_catalogo(df_catalogo, st.session_state.margen_global, pdf_path, logo_path)
+        with open(pdf_path, "rb") as pdf_file:
+            st.download_button(
+                label="📄 Descargar Catálogo en PDF",
+                data=pdf_file,
+                file_name=f"Catalogo_RojoMalbec_{st.session_state.margen_global}pct.pdf",
+                mime='application/pdf',
+                use_container_width=True,
+                type="primary"
+            )
+    except Exception as e:
+        pass # Ignorar error si falta fpdf temporalmente
 
 # --- CARRITO INTEGRADO ---
 if total_items > 0:
