@@ -143,6 +143,7 @@ def buscar_imagenes(nombre_producto):
     elif "jerk" in term: term = "jerk"
     elif "nanami" in term: term = "nanami"
     elif "pesto" in term: term = "pesto"
+    elif "pu erh" in term or "puerh" in term: term = "puerh"
     elif "za'atar" in term or "zaatar" in term: term = "zaatar"
     else:
         term = term.replace(" ", "")
