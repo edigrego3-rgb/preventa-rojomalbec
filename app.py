@@ -112,7 +112,7 @@ def buscar_imagenes(nombre_producto):
     if not os.path.exists(img_dir):
         return None, None
         
-    term = nombre_producto.lower()
+    term = nombre_producto.lower().replace("-", " ").replace("é", "e")
     
     # --- DICCIONARIO INTELIGENTE ---
     if "sloopy joe" in term or "sloppy" in term: term = "sloppyjoe"
