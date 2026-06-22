@@ -169,7 +169,7 @@ def buscar_imagenes(nombre_producto):
 def detectar_categoria(nombre):
     n = nombre.lower()
     if "sal" in n or "sales" in n: return "🧂 Sales"
-    if "blend" in n: return "🌿 Blends"
+    if "blend" in n: return "🥘 Blends"
     if "vital" in n: return "💚 Vital"
     if "te " in n or "té " in n or n.startswith("te ") or n.startswith("té "): return "🍵 Tés"
     if "mocktail" in n: return "🍹 Mocktails"
