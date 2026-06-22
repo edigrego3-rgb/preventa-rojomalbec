@@ -248,23 +248,6 @@ with st.expander("🧮 CALCULADORA DE GANANCIAS (Margen Base)", expanded=False):
                 del st.session_state[key]
         st.rerun()
         
-    st.markdown("---")
-    logo_path = os.path.join(current_dir, "images", "logo.png")
-    pdf_path = os.path.join(current_dir, "catalogo_temp.pdf")
-    try:
-        crear_pdf_catalogo(df_catalogo, st.session_state.margen_global, pdf_path, logo_path)
-        with open(pdf_path, "rb") as pdf_file:
-            st.download_button(
-                label="📄 Descargar Catálogo en PDF",
-                data=pdf_file,
-                file_name=f"Catalogo_RojoMalbec_{st.session_state.margen_global}pct.pdf",
-                mime='application/pdf',
-                use_container_width=True,
-                type="primary"
-            )
-    except Exception as e:
-        pass # Ignorar error si falta fpdf temporalmente
-
 # --- CARRITO INTEGRADO ---
 if total_items > 0:
     with st.expander(f"🛒 VER MI PEDIDO ({total_items} productos)", expanded=False):
@@ -346,11 +329,28 @@ df_catalogo["Categoria"] = df_catalogo["Nombre"].apply(detectar_categoria)
 # Filtramos solo los visibles (Comparte base con B2B)
 df_catalogo = df_catalogo[df_catalogo["Visible_B2B"] == True]
 
+st.markdown("---")
+logo_path = os.path.join(current_dir, "images", "logo.png")
+pdf_path = os.path.join(current_dir, "catalogo_temp.pdf")
+try:
+    crear_pdf_catalogo(df_catalogo, st.session_state.margen_global, pdf_path, logo_path)
+    with open(pdf_path, "rb") as pdf_file:
+        st.download_button(
+            label="📄 Descargar Catálogo en PDF",
+            data=pdf_file,
+            file_name=f"Catalogo_RojoMalbec_{st.session_state.margen_global}pct.pdf",
+            mime='application/pdf',
+            use_container_width=True,
+            type="primary"
+        )
+except Exception as e:
+    pass # Ignorar error si falta fpdf temporalmente
+
 # --- BUSCADOR ---
 search = st.text_input("🔍 Buscar producto...", placeholder="Ej: Sal, Curry...", label_visibility="collapsed")
 
 # --- CATÁLOGO POR PESTAÑAS (CLON B2B) ---
-categorias = ["🏠 Todos", "🧂 Sales", "🌿 Blends", "💚 Vital", "🍵 Tés", "🍹 Mocktails", "🌶️ Pimientas"]
+categorias = ["🌟 Todos", "🧂 Sales", "🥘 Blends", "💚 Vital", "🍵 Tés", "🍹 Mocktails", "🌶️ Pimientas"]
 tabs = st.tabs(categorias)
 
 for i, tab in enumerate(tabs):
@@ -358,7 +358,7 @@ for i, tab in enumerate(tabs):
         cat_actual = categorias[i]
         
         df_tab = df_catalogo.copy()
-        if cat_actual != "🏠 Todos":
+        if cat_actual != "🌟 Todos":
             df_tab = df_tab[df_tab["Categoria"] == cat_actual]
             
         if search:
