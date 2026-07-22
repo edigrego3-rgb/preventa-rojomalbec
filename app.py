@@ -381,6 +381,10 @@ for i, tab in enumerate(tabs):
         if cat_actual != "🌟 Todos":
             df_tab = df_tab[df_tab["Categoria"] == cat_actual]
             
+        if cat_actual == "🥘 Blends" and not df_tab.empty:
+            es_dry = df_tab["Nombre"].str.contains("dry|honey", case=False)
+            df_tab = pd.concat([df_tab[es_dry], df_tab[~es_dry]])
+            
         if search:
             df_tab = df_tab[df_tab["Nombre"].str.contains(search, case=False)]
             
