@@ -116,7 +116,10 @@ def buscar_imagenes(nombre_producto):
     
     # --- DICCIONARIO INTELIGENTE ---
     if "sloopy joe" in term or "sloppy" in term: term = "sloppyjoe"
-    elif "sal al malbec" in term: term = "malbec"
+    elif "sal al malbec" in term or term == "sal malbec": term = "salmarinaalmalbec"
+    elif "pu" in term and "erh" in term: term = "puerh"
+    elif "zoco" in term: term = "zoco"
+    elif "dry" in term or "honey" in term: term = "dryhothoney"
     elif "sal negra" in term or "hawaiana" in term: term = "hawaiana"
     elif "ajo a las hierbas" in term: term = "ajohierbas"
     elif "bbq" in term or "barbacoa" in term: term = "barbacoa"
@@ -143,19 +146,18 @@ def buscar_imagenes(nombre_producto):
     elif "jerk" in term: term = "jerk"
     elif "nanami" in term: term = "nanami"
     elif "pesto" in term: term = "pesto"
-    elif "pu erh" in term or "puerh" in term: term = "puerh"
     elif "za'atar" in term or "zaatar" in term: term = "zaatar"
     else:
         term = term.replace(" ", "")
         
-    term = term.replace("&", "").replace("(", "").replace(")", "").replace("ñ", "n").replace("ü", "u").replace("'", "").replace("ō", "o")
+    term = term.replace("&", "").replace("(", "").replace(")", "").replace("-", "").replace("ñ", "n").replace("ü", "u").replace("'", "").replace("ō", "o")
     
     archivos_validos = []
     for f in os.listdir(img_dir):
         f_limpio = f.lower().replace("ñ", "n")
         if "trasera" in f_limpio or "back" in f_limpio:
             continue
-        f_sin_espacios = f_limpio.replace("_", "").replace(" ", "")
+        f_sin_espacios = f_limpio.replace("_", "").replace(" ", "").replace("-", "")
         if term in f_sin_espacios or term in f_limpio.replace("_", " "):
             archivos_validos.append(f)
             
