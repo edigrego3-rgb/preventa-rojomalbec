@@ -344,7 +344,24 @@ if df_catalogo.empty:
     st.error("No se pudo cargar el catálogo. Contacte a administración.")
     st.stop()
 
-df_catalogo["Categoria"] = df_catalogo["Nombre"].apply(detectar_categoria)
+def asignar_categorias(df):
+    if "Categoria" in df.columns:
+        def mapping_rule(row):
+            val = str(row.get("Categoria", "")).strip()
+            if not val or val.lower() in ["none", "0", "", "nan"]:
+                return detectar_categoria(row["Nombre"])
+            if "sales" in val.lower() and "🧂" not in val: return "🧂 Sales"
+            if "blends" in val.lower() and "🌿" not in val: return "🌿 Blends"
+            if "tés" in val.lower() or "tes" in val.lower() and "🍵" not in val: return "🍵 Tés"
+            if "vital" in val.lower() and "💚" not in val: return "💚 Vital"
+            if "mocktails" in val.lower() or "mocktail" in val.lower() and "🍹" not in val: return "🍹 Mocktails"
+            if "pimientas" in val.lower() or "pimienta" in val.lower() and "🌶️" not in val: return "🌶️ Pimientas"
+            return val
+        return df.apply(mapping_rule, axis=1)
+    else:
+        return df["Nombre"].apply(detectar_categoria)
+
+df_catalogo["Categoria"] = asignar_categorias(df_catalogo)
 
 # Filtramos solo los visibles (Comparte base con B2B)
 df_catalogo = df_catalogo[df_catalogo["Visible_B2B"] == True]
