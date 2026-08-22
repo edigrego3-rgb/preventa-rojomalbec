@@ -10,7 +10,6 @@ if current_dir not in sys.path:
 
 from modules.data_manager import load_catalog_data, guardar_visibilidad
 from modules.utils import redondear_precio, extraer_descripcion, generar_mensaje_whatsapp
-from modules.pdf_generator import crear_pdf_catalogo
 
 # --- CONFIGURACIÓN DE PÁGINA ---
 if "sidebar_state" not in st.session_state:
@@ -103,6 +102,24 @@ footer {visibility: hidden !important; display: none !important;}
     margin-top: 5px;
     border: 1px solid rgba(212, 175, 55, 0.3);
 }
+
+/* --- MOBILE GRID --- */
+@media (max-width: 640px) {
+    [data-testid="column"] {
+        width: 48% !important;
+        flex: 1 1 48% !important;
+        min-width: 48% !important;
+        padding-left: 2px !important;
+        padding-right: 2px !important;
+    }
+    [data-testid="stHorizontalBlock"] {
+        flex-wrap: wrap !important;
+        gap: 2%;
+    }
+    .card { padding: 10px; }
+    .prod-name { font-size: 0.95rem; }
+    .price-main, .price-pvp-value { font-size: 1rem; }
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -112,14 +129,11 @@ def buscar_imagenes(nombre_producto):
     if not os.path.exists(img_dir):
         return None, None
         
-    term = nombre_producto.lower().replace("-", " ").replace("é", "e")
+    term = nombre_producto.lower()
     
     # --- DICCIONARIO INTELIGENTE ---
     if "sloopy joe" in term or "sloppy" in term: term = "sloppyjoe"
-    elif "sal al malbec" in term or term == "sal malbec": term = "salmarinaalmalbec"
-    elif "pu" in term and "erh" in term: term = "puerh"
-    elif "zoco" in term: term = "zoco"
-    elif "dry" in term or "honey" in term: term = "dryhothoney"
+    elif "sal al malbec" in term: term = "malbec"
     elif "sal negra" in term or "hawaiana" in term: term = "hawaiana"
     elif "ajo a las hierbas" in term: term = "ajohierbas"
     elif "bbq" in term or "barbacoa" in term: term = "barbacoa"
@@ -150,14 +164,14 @@ def buscar_imagenes(nombre_producto):
     else:
         term = term.replace(" ", "")
         
-    term = term.replace("&", "").replace("(", "").replace(")", "").replace("-", "").replace("ñ", "n").replace("ü", "u").replace("'", "").replace("ō", "o")
+    term = term.replace("&", "").replace("(", "").replace(")", "").replace("ñ", "n").replace("ü", "u").replace("'", "").replace("ō", "o")
     
     archivos_validos = []
     for f in os.listdir(img_dir):
         f_limpio = f.lower().replace("ñ", "n")
         if "trasera" in f_limpio or "back" in f_limpio:
             continue
-        f_sin_espacios = f_limpio.replace("_", "").replace(" ", "").replace("-", "")
+        f_sin_espacios = f_limpio.replace("_", "").replace(" ", "")
         if term in f_sin_espacios or term in f_limpio.replace("_", " "):
             archivos_validos.append(f)
             
@@ -170,39 +184,50 @@ def buscar_imagenes(nombre_producto):
             
     return os.path.join(img_dir, archivos_validos[0]), None
 
-import unicodedata
+MAP_CODIGOS_POS = {
+    'sal al malbec': 'RM-SAL-MAL', 'sal british': 'RM-SAL-BRI', 'sal de limon y chile': 'RM-SAL-LCH',
+    'sal de limon y chile (suave)': 'RM-SAL-LCH', 'sal de rosas y romero': 'RM-SAL-ROS', 'sal del desierto': 'RM-SAL-DES',
+    'sal negra hawaiana': 'RM-SAL-HAW', 'sal negra tipo hawaiana': 'RM-SAL-HAW', 'sal esvanetian': 'RM-SAL-ESV',
+    'sal svanetian': 'RM-SAL-ESV', 'sal vikinga ahumada': 'RM-SAL-VIK', 'ajo a las hierbas': 'RM-BLE-AJO',
+    'ajo a las hierbas gourmet': 'RM-BLE-AJO', 'bbq': 'RM-BLE-BBQ', 'bbq rojo malbec': 'RM-BLE-BBQ',
+    'curry colombo': 'RM-BLE-COL', 'nanami togarashi': 'RM-BLE-NAN', 'nanami tōgarashi': 'RM-BLE-NAN',
+    'za\\'atar': 'RM-BLE-ZAA', 'zaatar': 'RM-BLE-ZAA', 'sloopy joe': 'RM-BLE-SLO', 'sloppy joe': 'RM-BLE-SLO',
+    'gluhwein': 'RM-BLE-GLU', 'glühwein': 'RM-BLE-GLU', 'panch phoron': 'RM-BLE-PAN', 'pesto siciliano con pistacho': 'RM-BLE-PES',
+    'mole mexicano': 'RM-BLE-MOL', 'mole mexicano de autor': 'RM-BLE-MME', 'espana profunda': 'RM-BLE-ESP',
+    'españa profunda': 'RM-BLE-ESP', 'dry hot honey': 'RM-BLE-DRY', 'vital caldo': 'RM-VIT-CAL',
+    'vital italia': 'RM-VIT-ITA', 'vital india': 'RM-VIT-IND', 'vital parrilera': 'RM-VIT-PAR',
+    'vital criollo': 'RM-VIT-CRI', 'vital citrus': 'RM-VIT-CIT', 'vital tipo queso': 'RM-VIT-QUE',
+    'vital tipo queso · perfil parmesano reserva': 'RM-VIT-QUE', 'pimienta negra': 'RM-PIM-NEG',
+    'pimienta negra de autor': 'RM-PIM-NEG', 'pimienta roja y larga': 'RM-PIM-ROJ', 'pimienta roja y pimienta larga': 'RM-PIM-ROJ',
+    'pimienta verde': 'RM-PIM-VER', 'pimienta verde de autor': 'RM-PIM-VER', 'te pu-erh': 'RM-TEA-PUE',
+    'te pu erh': 'RM-TEA-PUE', 'te pu-erh rojo malbec': 'RM-TEA-PUE', 'rooibos ambar': 'RM-TEA-ROO',
+    'rooibos : ambar africano': 'RM-TEA-ROO', 'te verde del zoco': 'RM-TEA-ZOC', 'te karak': 'RM-TEA-KAR',
+    'cacao y zest': 'RM-TEA-CAC'
+}
 
-def detectar_categoria(nombre_producto):
-    nombre_raw = str(nombre_producto)
-    nombre = unicodedata.normalize('NFD', nombre_raw).encode('ascii', 'ignore').decode('utf-8').lower()
-    palabras = nombre.replace("-", " ").replace(":", " ").split()
-    
-    # 1. TÉS (Prioridad #1)
-    es_te = ("te" in palabras or "pu" in palabras or "erh" in palabras or 
-             "puerh" in palabras or "rooibos" in palabras or 
-             "karak" in palabras or "zoco" in palabras or nombre.startswith("te "))
-    
-    if es_te and "panko" not in palabras:
-        return "🍵 Tés"
+def auto_generar_codigo(nombre):
+    palabras = str(nombre).strip().upper().split()
+    if not palabras: return 'RM-XXX-000'
+    pref = palabras[0][:3]
+    suf = palabras[1][:3] if len(palabras) > 1 else pref
+    return f'RM-{pref}-{suf}'
 
-    # 2. SALES
-    if "sal" in palabras or nombre.startswith("sal "):
-        return "🧂 Sales"
+def obtener_codigo_vendedor(codigo_actual, nombre_producto):
+    if codigo_actual and str(codigo_actual).startswith('RM-'): return str(codigo_actual).strip()
+    nom_clean = ' '.join(str(nombre_producto).lower().split())
+    if nom_clean in MAP_CODIGOS_POS: return MAP_CODIGOS_POS[nom_clean]
+    if codigo_actual and str(codigo_actual).strip() != '' and str(codigo_actual).lower() != 'nan': return str(codigo_actual).strip()
+    return auto_generar_codigo(nombre_producto)
 
-    # 3. VITAL
-    if "vital" in palabras:
-        return "💚 Vital"
-
-    # 4. MOCKTAILS
-    if "mocktail" in palabras or "mocktail" in nombre:
-        return "🍹 Mocktails"
-
-    # 5. PIMIENTAS
-    if "pimienta" in palabras or "pimienta" in nombre:
-        return "🌶️ Pimientas"
-
-    # 6. BLENDS (Default)
-    return "🥘 Blends"
+def detectar_categoria(nombre):
+    n = nombre.lower()
+    if "sal" in n or "sales" in n: return "🧂 Sales"
+    if "blend" in n: return "🌿 Blends"
+    if "vital" in n: return "💚 Vital"
+    if "te " in n or "té " in n or n.startswith("te ") or n.startswith("té "): return "🍵 Tés"
+    if "mocktail" in n: return "🍹 Mocktails"
+    if "pimienta" in n: return "🌶️ Pimientas"
+    return "🏠 Otros"
 
 # --- ESTADO INICIAL ---
 if 'carrito' not in st.session_state:
@@ -267,7 +292,7 @@ with st.expander("🧮 CALCULADORA DE GANANCIAS (Margen Base)", expanded=False):
             if key.startswith("precio_"):
                 del st.session_state[key]
         st.rerun()
-        
+
 # --- CARRITO INTEGRADO ---
 if total_items > 0:
     with st.expander(f"🛒 VER MI PEDIDO ({total_items} productos)", expanded=False):
@@ -317,24 +342,79 @@ if total_items > 0:
         cliente_final = st.text_input("Local / Cliente final", key="cliente_final")
         direccion = st.text_input("Dirección", key="cliente_dir")
         
-        c_enviar, c_vaciar = st.columns([3, 1])
+        c_enviar, c_mail, c_excel = st.columns([1, 1, 1])
         with c_enviar:
-            if st.button("✅ ENVIAR PEDIDO POR WHATSAPP", type="primary", use_container_width=True):
+            if st.button("🟢 WhatsApp", use_container_width=True):
                 if not cliente_final:
-                    st.error("Ingresá el nombre del cliente.")
+                    st.error("Ingresá el cliente.")
                 else:
-                    datos_vendedor = {
-                        "nombre_vendedor": st.session_state.vendedor_nombre,
-                        "cliente_final": cliente_final,
-                        "direccion": direccion
+                    d_v = {"nombre_vendedor": st.session_state.vendedor_nombre, "cliente_final": cliente_final, "direccion": direccion}
+                    link = generar_mensaje_whatsapp(items_carrito, total_costo, total_venta, "5493544308380", d_v)
+                    st.markdown(f"<a href='{link}' target='_blank' style='display:block; text-align:center; background-color:#25D366; color:white; padding:8px; border-radius:5px; text-decoration:none;'>📲 Enviar</a>", unsafe_allow_html=True)
+        with c_mail:
+            if st.button("📧 Email", use_container_width=True):
+                if not cliente_final:
+                    st.error("Ingresá el cliente.")
+                else:
+                    import json
+                    import urllib.request
+                    
+                    pedido_detalle = ""
+                    for i in items_carrito:
+                        pedido_detalle += f"- {i['cantidad']} unid. | {i['nombre']} | $ {i['precio_venta']} c/u\n"
+                    
+                    payload = {
+                        "Vendedor": st.session_state.vendedor_nombre,
+                        "Cliente_Final": cliente_final,
+                        "Direccion": direccion,
+                        "Total_Venta": f"$ {total_venta}",
+                        "Costo_Base": f"$ {total_costo}",
+                        "Detalle_Pedido": pedido_detalle
                     }
-                    link_wa = generar_mensaje_whatsapp(items_carrito, total_costo, total_venta, "5493544308380", datos_vendedor)
-                    st.success("¡Listo!")
-                    st.markdown(f"<a href='{link_wa}' target='_blank' style='display:block; text-align:center; background-color:#25D366; color:white; padding:12px; border-radius:8px; font-weight:bold; text-decoration:none;'>📲 ABRIR WHATSAPP</a>", unsafe_allow_html=True)
-        with c_vaciar:
-            if st.button("🗑️ Vaciar", use_container_width=True):
-                st.session_state.carrito = {}
-                st.rerun()
+                    
+                    req = urllib.request.Request(
+                        "https://formspree.io/f/mqpzjopo",
+                        data=json.dumps(payload).encode("utf-8"),
+                        headers={"Content-Type": "application/json", "Accept": "application/json"}
+                    )
+                    try:
+                        urllib.request.urlopen(req)
+                        st.success("✅ ¡Mail enviado con éxito!")
+                    except Exception as e:
+                        st.error("Hubo un error al enviar el mail.")
+        with c_excel:
+            import io
+            df_cat = load_catalog_data()
+            export_rows = []
+            for item in items_carrito:
+                match = df_cat[df_cat['Nombre'] == item['nombre']]
+                if not match.empty:
+                    row = match.iloc[0]
+                    cat = detectar_categoria(item['nombre'])
+                    gramaje = row.get('Gramaje_Venta', row.get('Base_g', 0))
+                    cod_lote = row.get('Codigo', f"L {item['nombre'][:4].upper()}")
+                    # El traductor POS se definirá arriba
+                    cod_pos = obtener_codigo_vendedor(cod_lote, item['nombre'])
+                    export_rows.append({
+                        "Categoría": cat,
+                        "Producto": item['nombre'],
+                        "Cantidad": item['cantidad'],
+                        "Gramaje (g)": gramaje,
+                        "Código Lote": cod_lote,
+                        "Código POS / Barras": cod_pos,
+                        "Precio Venta": item['precio_venta']
+                    })
+            if export_rows:
+                df_ex = pd.DataFrame(export_rows)
+                buffer = io.BytesIO()
+                with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
+                    df_ex.to_excel(writer, index=False, sheet_name="Lista Vineria")
+                
+                st.download_button(label="📊 Excel", data=buffer.getvalue(), file_name=f"Lista_{cliente_final}.xlsx", mime="application/vnd.ms-excel", use_container_width=True)
+                
+        if st.button("🗑️ Vaciar Carrito", use_container_width=True):
+            st.session_state.carrito = {}
+            st.rerun()
 
 # --- CARGAR CATÁLOGO ---
 with st.spinner("Actualizando catálogo..."):
@@ -344,50 +424,16 @@ if df_catalogo.empty:
     st.error("No se pudo cargar el catálogo. Contacte a administración.")
     st.stop()
 
-def asignar_categorias(df):
-    if "Categoria" in df.columns:
-        def mapping_rule(row):
-            val = str(row.get("Categoria", "")).strip()
-            if not val or val.lower() in ["none", "0", "", "nan"]:
-                return detectar_categoria(row["Nombre"])
-            if "sales" in val.lower() and "🧂" not in val: return "🧂 Sales"
-            if "blends" in val.lower() and "🌿" not in val: return "🌿 Blends"
-            if "tés" in val.lower() or "tes" in val.lower() and "🍵" not in val: return "🍵 Tés"
-            if "vital" in val.lower() and "💚" not in val: return "💚 Vital"
-            if "mocktails" in val.lower() or "mocktail" in val.lower() and "🍹" not in val: return "🍹 Mocktails"
-            if "pimientas" in val.lower() or "pimienta" in val.lower() and "🌶️" not in val: return "🌶️ Pimientas"
-            return val
-        return df.apply(mapping_rule, axis=1)
-    else:
-        return df["Nombre"].apply(detectar_categoria)
-
-df_catalogo["Categoria"] = asignar_categorias(df_catalogo)
+df_catalogo["Categoria"] = df_catalogo["Nombre"].apply(detectar_categoria)
 
 # Filtramos solo los visibles (Comparte base con B2B)
 df_catalogo = df_catalogo[df_catalogo["Visible_B2B"] == True]
-
-st.markdown("---")
-logo_path = os.path.join(current_dir, "images", "logo.png")
-pdf_path = os.path.join(current_dir, "catalogo_temp.pdf")
-try:
-    crear_pdf_catalogo(df_catalogo, st.session_state.margen_global, pdf_path, logo_path)
-    with open(pdf_path, "rb") as pdf_file:
-        st.download_button(
-            label="📄 Descargar Catálogo en PDF",
-            data=pdf_file,
-            file_name=f"Catalogo_RojoMalbec_{st.session_state.margen_global}pct.pdf",
-            mime='application/pdf',
-            use_container_width=True,
-            type="primary"
-        )
-except Exception as e:
-    pass # Ignorar error si falta fpdf temporalmente
 
 # --- BUSCADOR ---
 search = st.text_input("🔍 Buscar producto...", placeholder="Ej: Sal, Curry...", label_visibility="collapsed")
 
 # --- CATÁLOGO POR PESTAÑAS (CLON B2B) ---
-categorias = ["🌟 Todos", "🧂 Sales", "🥘 Blends", "💚 Vital", "🍵 Tés", "🍹 Mocktails", "🌶️ Pimientas"]
+categorias = ["🏠 Todos", "🧂 Sales", "🌿 Blends", "💚 Vital", "🍵 Tés", "🍹 Mocktails", "🌶️ Pimientas"]
 tabs = st.tabs(categorias)
 
 for i, tab in enumerate(tabs):
@@ -395,12 +441,8 @@ for i, tab in enumerate(tabs):
         cat_actual = categorias[i]
         
         df_tab = df_catalogo.copy()
-        if cat_actual != "🌟 Todos":
+        if cat_actual != "🏠 Todos":
             df_tab = df_tab[df_tab["Categoria"] == cat_actual]
-            
-        if cat_actual == "🥘 Blends" and not df_tab.empty:
-            es_dry = df_tab["Nombre"].str.contains("dry|honey", case=False)
-            df_tab = pd.concat([df_tab[es_dry], df_tab[~es_dry]])
             
         if search:
             df_tab = df_tab[df_tab["Nombre"].str.contains(search, case=False)]
@@ -443,62 +485,58 @@ for i, tab in enumerate(tabs):
             col_idx = idx % 2
             with cols[col_idx]:
                 badge_html = f"<div class='cart-badge'>{qty_actual}</div>" if qty_actual > 0 else ""
-                html_card = f"""<div class='card'>
-{badge_html}
-<div class='prod-name'>{nombre}</div>
-<div class='price-row'>
-<div class='price-pvp'>
-<div class='price-label'>PVP Sugerido en Góndola</div>
-<div class='price-pvp-value'>$ {pvp_redondeado:,}</div>
-</div>
-</div>
-<div style='font-size:0.7em; color:#555; margin-top:4px;'>Ref: $ {costo_redondeado:,}</div>
-</div>"""
-                st.markdown(html_card, unsafe_allow_html=True)
                 
-                # --- HERRAMIENTAS DE VENDEDOR ---
-                st.markdown("<div style='background:#f0f2f6; padding:10px; border-radius:8px; margin-top:-10px; margin-bottom:10px; color:#333;'>", unsafe_allow_html=True)
-                
-                if qty_actual > 0:
-                    # YA ESTÁ EN EL CARRITO
-                    st.markdown(f"Vendido a cliente: <b>${precio_venta_actual:,}</b>", unsafe_allow_html=True)
-                    st.markdown(f"<b>En pedido: {qty_actual} unidades</b>", unsafe_allow_html=True)
-                    
-                    # Selector para cambiar cantidad
-                    opciones_qty = list(range(1, 101))
-                    idx_actual = opciones_qty.index(qty_actual) if qty_actual in opciones_qty else 0
-                    
-                    col_qty, col_btn = st.columns([1, 1])
-                    with col_qty:
-                        nueva_cant = st.selectbox("Cambiar cantidad", options=opciones_qty, index=idx_actual, key=f"qty_{cat_actual}_{idx}", label_visibility="collapsed")
-                    with col_btn:
-                        if st.button("✅ Actualizar", key=f"upd_{cat_actual}_{idx}", use_container_width=True):
-                            st.session_state.carrito[nombre]['cantidad'] = nueva_cant
-                            st.rerun()
-                    
-                    if st.button("🗑️ Quitar del pedido", key=f"del_{cat_actual}_{idx}", use_container_width=True):
-                        del st.session_state.carrito[nombre]
-                        st.rerun()
-                else:
-                    # NO ESTÁ EN EL CARRITO - Primero elige precio y cantidad, después confirma
-                    st.markdown("<b>Precio final al cliente ($)</b>", unsafe_allow_html=True)
-                    dynamic_key = f"precio_{cat_actual}_{idx}_{st.session_state.margen_global}"
-                    precio_input = st.number_input("Precio", min_value=int(costo_redondeado), value=int(precio_sugerido), step=100, key=dynamic_key, label_visibility="collapsed")
-                    
-                    col_qty, col_btn = st.columns([1, 2])
-                    with col_qty:
-                        cant_elegida = st.selectbox("Cantidad", options=list(range(1, 101)), index=0, key=f"selqty_{cat_actual}_{idx}", label_visibility="collapsed")
-                    with col_btn:
-                        if st.button(f"🛒 AGREGAR ({cant_elegida} un.)", key=f"add_{cat_actual}_{idx}", use_container_width=True, type="primary"):
-                            st.session_state.carrito[nombre] = {"cantidad": cant_elegida, "costo": costo_redondeado, "precio_venta": precio_input}
-                            st.rerun()
-                
-                st.markdown("</div>", unsafe_allow_html=True)
-                
-                # Imágenes
+                # Encabezado Compacto (Imagen + Título)
+                st.markdown("<div class='card' style='padding:5px; text-align:center;'>", unsafe_allow_html=True)
                 if img_front:
                     st.image(img_front, use_container_width=True)
-                if descripcion:
-                    with st.expander("🌿 Ingredientes y maridaje"):
-                        st.markdown(f"<div style='font-size:1.1em; color:#f8f9fa; line-height:1.55; white-space:pre-wrap;'>{descripcion}</div>", unsafe_allow_html=True)
+                
+                html_header = f"""
+                {badge_html}
+                <div class='prod-name' style='font-size:1rem; margin-top:8px;'>{nombre}</div>
+                <div style='color:#d4af37; font-weight:600; font-size:0.95rem;'>PVP: $ {pvp_redondeado:,}</div>
+                <div style='font-size:0.7em; color:#555;'>Ref: $ {costo_redondeado:,}</div>
+                </div>
+                """
+                st.markdown(html_header, unsafe_allow_html=True)
+                
+                # Expansor de Compra e Ingredientes
+                with st.expander("🛒 Vender / Info"):
+                    st.markdown("<div style='background:#f0f2f6; padding:10px; border-radius:8px; margin-bottom:10px; color:#333;'>", unsafe_allow_html=True)
+                    
+                    if qty_actual > 0:
+                        st.markdown(f"Vendido a: <b>${precio_venta_actual:,}</b>", unsafe_allow_html=True)
+                        st.markdown(f"<b>En pedido: {qty_actual} unid.</b>", unsafe_allow_html=True)
+                        
+                        opciones_qty = list(range(1, 101))
+                        idx_actual = opciones_qty.index(qty_actual) if qty_actual in opciones_qty else 0
+                        
+                        col_q, col_b = st.columns([1, 1])
+                        with col_q:
+                            nueva_cant = st.selectbox("Cant.", options=opciones_qty, index=idx_actual, key=f"qty_{cat_actual}_{idx}", label_visibility="collapsed")
+                        with col_b:
+                            if st.button("✅ Upd.", key=f"upd_{cat_actual}_{idx}", use_container_width=True):
+                                st.session_state.carrito[nombre]['cantidad'] = nueva_cant
+                                st.rerun()
+                        
+                        if st.button("🗑️ Quitar", key=f"del_{cat_actual}_{idx}", use_container_width=True):
+                            del st.session_state.carrito[nombre]
+                            st.rerun()
+                    else:
+                        st.markdown("<b>Precio al cliente ($)</b>", unsafe_allow_html=True)
+                        dynamic_key = f"precio_{cat_actual}_{idx}_{st.session_state.margen_global}"
+                        precio_input = st.number_input("Precio", min_value=int(costo_redondeado), value=int(precio_sugerido), step=100, key=dynamic_key, label_visibility="collapsed")
+                        
+                        col_q, col_b = st.columns([1, 2])
+                        with col_q:
+                            cant_elegida = st.selectbox("Cant.", options=list(range(1, 101)), index=0, key=f"selqty_{cat_actual}_{idx}", label_visibility="collapsed")
+                        with col_b:
+                            if st.button(f"🛒 Add", key=f"add_{cat_actual}_{idx}", use_container_width=True, type="primary"):
+                                st.session_state.carrito[nombre] = {"cantidad": cant_elegida, "costo": costo_redondeado, "precio_venta": precio_input}
+                                st.rerun()
+                    
+                    st.markdown("</div>", unsafe_allow_html=True)
+                    
+                    if descripcion:
+                        st.markdown(f"<div style='font-size:0.8rem; color:#ccc; line-height:1.2;'><b>Info:</b> {descripcion}</div>", unsafe_allow_html=True)
                 st.markdown("<br>", unsafe_allow_html=True)
