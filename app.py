@@ -191,7 +191,7 @@ MAP_CODIGOS_POS = {
     'sal svanetian': 'RM-SAL-ESV', 'sal vikinga ahumada': 'RM-SAL-VIK', 'ajo a las hierbas': 'RM-BLE-AJO',
     'ajo a las hierbas gourmet': 'RM-BLE-AJO', 'bbq': 'RM-BLE-BBQ', 'bbq rojo malbec': 'RM-BLE-BBQ',
     'curry colombo': 'RM-BLE-COL', 'nanami togarashi': 'RM-BLE-NAN', 'nanami tōgarashi': 'RM-BLE-NAN',
-    'za\\'atar': 'RM-BLE-ZAA', 'zaatar': 'RM-BLE-ZAA', 'sloopy joe': 'RM-BLE-SLO', 'sloppy joe': 'RM-BLE-SLO',
+    "za'atar": 'RM-BLE-ZAA', 'zaatar': 'RM-BLE-ZAA', 'sloopy joe': 'RM-BLE-SLO', 'sloppy joe': 'RM-BLE-SLO',
     'gluhwein': 'RM-BLE-GLU', 'glühwein': 'RM-BLE-GLU', 'panch phoron': 'RM-BLE-PAN', 'pesto siciliano con pistacho': 'RM-BLE-PES',
     'mole mexicano': 'RM-BLE-MOL', 'mole mexicano de autor': 'RM-BLE-MME', 'espana profunda': 'RM-BLE-ESP',
     'españa profunda': 'RM-BLE-ESP', 'dry hot honey': 'RM-BLE-DRY', 'vital caldo': 'RM-VIT-CAL',
