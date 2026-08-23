@@ -397,8 +397,33 @@ if total_items > 0:
                     cat = detectar_categoria(item['nombre'])
                     gramaje = row.get('Gramaje_Venta', row.get('Base_g', 0))
                     cod_lote = row.get('Codigo', f"L {item['nombre'][:4].upper()}")
-                    # El traductor POS se definirá arriba
                     cod_pos = obtener_codigo_vendedor(cod_lote, item['nombre'])
+                    
+                    if "SAL-" in cod_pos:
+                        cat = "🧂 Sales"
+                    elif "BLE-" in cod_pos:
+                        cat = "🌿 Blends"
+                    elif "VIT-" in cod_pos:
+                        cat = "💚 Vital"
+                    elif "TEA-" in cod_pos:
+                        cat = "🍵 Tés"
+                    elif "PIM-" in cod_pos:
+                        cat = "🌶️ Pimientas"
+                    else:
+                        cat = "🏠 Otros"
+                        
+                    costo_mayorista = float(row.get("Precio_Mayorista", 0))
+                    pvp_guardado = float(row.get("PVP_Sugerido", 0))
+                    if pvp_guardado > 0:
+                        pvp_final = pvp_guardado
+                    else:
+                        markup_revendedor = float(row.get("Markup_Revendedor", 0))
+                        if markup_revendedor > 0:
+                            pvp_final = costo_mayorista * (1 + markup_revendedor / 100)
+                        else:
+                            pvp_final = costo_mayorista * 1.5
+                    pvp_redondeado = redondear_precio(pvp_final)
+
                     export_rows.append({
                         "Categoría": cat,
                         "Producto": item['nombre'],
@@ -406,7 +431,8 @@ if total_items > 0:
                         "Gramaje (g)": gramaje,
                         "Código Lote": cod_lote,
                         "Código POS / Barras": cod_pos,
-                        "Precio Venta": item['precio_venta']
+                        "Precio Venta": item['precio_venta'],
+                        "PVP Sugerido": pvp_redondeado
                     })
             if export_rows:
                 df_ex = pd.DataFrame(export_rows)
