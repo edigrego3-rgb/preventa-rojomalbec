@@ -375,13 +375,17 @@ if total_items > 0:
                     req = urllib.request.Request(
                         "https://formspree.io/f/mqpzjopo",
                         data=json.dumps(payload).encode("utf-8"),
-                        headers={"Content-Type": "application/json", "Accept": "application/json"}
+                        headers={
+                            "Content-Type": "application/json", 
+                            "Accept": "application/json",
+                            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0 Safari/537.36"
+                        }
                     )
                     try:
                         urllib.request.urlopen(req)
                         st.success("✅ ¡Mail enviado con éxito!")
                     except Exception as e:
-                        st.error("Hubo un error al enviar el mail.")
+                        st.error(f"Hubo un error al enviar el mail: {e}")
         with c_excel:
             import io
             df_cat = load_catalog_data()
