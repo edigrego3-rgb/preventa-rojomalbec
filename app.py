@@ -106,12 +106,16 @@ footer {visibility: hidden !important; display: none !important;}
 /* --- MOBILE GRID --- */
 @media (max-width: 640px) {
     [data-testid="column"] {
-        width: 48% !important;
-        flex: 1 1 48% !important;
-        min-width: 48% !important;
+        flex: 1 1 auto !important;
         padding-left: 2px !important;
         padding-right: 2px !important;
     }
+    
+    /* Para columnas de 1/2 de ancho */
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(n) {
+        min-width: 30% !important;
+    }
+    
     [data-testid="stHorizontalBlock"] {
         flex-wrap: wrap !important;
         gap: 2%;
@@ -470,8 +474,41 @@ df_catalogo = df_catalogo[df_catalogo["Visible_B2B"] == True]
 # --- BUSCADOR ---
 search = st.text_input("🔍 Buscar producto...", placeholder="Ej: Sal, Curry...", label_visibility="collapsed")
 
+@st.dialog("🛒 Agregar al Pedido")
+def modal_venta(nombre, img_front, descripcion, pvp_redondeado, costo_redondeado):
+    st.markdown(f"<h4 style='text-align:center; color:#d4af37;'>{nombre}</h4>", unsafe_allow_html=True)
+    if img_front:
+        st.image(img_front, use_container_width=True)
+    
+    st.markdown(f"<div style='text-align:center; margin-bottom:10px;'><b>PVP Sugerido:</b> $ {pvp_redondeado:,}<br><span style='color:#777; font-size:0.8em;'>Costo ref: $ {costo_redondeado:,}</span></div>", unsafe_allow_html=True)
+    
+    qty_actual = st.session_state.carrito.get(nombre, {}).get("cantidad", 0)
+    
+    if qty_actual > 0:
+        st.success(f"¡Ya tenés {qty_actual} en el pedido!")
+        if st.button("🗑️ Quitar del pedido", use_container_width=True):
+            del st.session_state.carrito[nombre]
+            st.rerun()
+    else:
+        # Calcular sugerido localmente
+        precio_sugerido = redondear_precio(costo_redondeado * (1 + (st.session_state.margen_global / 100)))
+        
+        c1, c2 = st.columns(2)
+        with c1:
+            cant = st.number_input("Cantidad", min_value=1, max_value=100, value=1)
+        with c2:
+            precio = st.number_input("Precio a cobrar", min_value=int(costo_redondeado), value=int(precio_sugerido), step=100)
+            
+        if st.button("🛒 Confirmar Venta", type="primary", use_container_width=True):
+            st.session_state.carrito[nombre] = {"cantidad": cant, "costo": costo_redondeado, "precio_venta": precio}
+            st.rerun()
+            
+    if descripcion:
+        st.markdown("<hr>", unsafe_allow_html=True)
+        st.markdown(f"<div style='font-size:0.8rem; color:#555;'>{descripcion}</div>", unsafe_allow_html=True)
+
 # --- CATÁLOGO POR PESTAÑAS (CLON B2B) ---
-categorias = ["🏠 Todos", "🧂 Sales", "🌿 Blends", "💚 Vital", "🍵 Tés", "🍹 Mocktails", "🌶️ Pimientas"]
+categorias = ["🏠 Todos", "🧂 Sales", "🌿 Blends", "💚 Vital", "🍵 Tés", "🍹 Mocktails", "🌶️ Pimientas", "🧪 PRUEBA POP-UP"]
 tabs = st.tabs(categorias)
 
 for i, tab in enumerate(tabs):
@@ -489,6 +526,37 @@ for i, tab in enumerate(tabs):
             st.info("No hay productos en esta categoría.")
             continue
         
+        if cat_actual == "🧪 PRUEBA POP-UP":
+            cols_popup = st.columns(3)
+            for idx, row in df_tab.reset_index(drop=True).iterrows():
+                nombre = row["Nombre"]
+                costo_mayorista = float(row["Precio_Mayorista"])
+                costo_redondeado = redondear_precio(costo_mayorista)
+                
+                pvp_guardado = float(row.get("PVP_Sugerido", 0))
+                if pvp_guardado > 0: pvp_final = pvp_guardado
+                else: pvp_final = costo_mayorista * (1 + (float(row.get("Markup_Revendedor", 0)) or 50) / 100)
+                pvp_redondeado = redondear_precio(pvp_final)
+                
+                desc_path = os.path.join(current_dir, "Descripciones_RojoMalbec.md")
+                descripcion = extraer_descripcion(nombre, desc_path)
+                img_front, _ = buscar_imagenes(nombre)
+                
+                qty_actual = st.session_state.carrito.get(nombre, {}).get("cantidad", 0)
+                badge = f"🟢 x{qty_actual}" if qty_actual > 0 else ""
+                
+                col_idx = idx % 3
+                with cols_popup[col_idx]:
+                    st.markdown(f"<div style='text-align:center; margin-bottom:5px; min-height:80px;'>", unsafe_allow_html=True)
+                    if img_front:
+                        st.image(img_front, use_container_width=True)
+                    st.markdown("</div>", unsafe_allow_html=True)
+                    
+                    if st.button(f"{badge} {nombre[:15]}", key=f"btn_pop_{idx}", use_container_width=True):
+                        modal_venta(nombre, img_front, descripcion, pvp_redondeado, costo_redondeado)
+                        
+            continue
+            
         cols = st.columns(2)
         for idx, row in df_tab.reset_index(drop=True).iterrows():
             nombre = row["Nombre"]
