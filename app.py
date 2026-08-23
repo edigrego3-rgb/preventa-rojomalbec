@@ -364,6 +364,7 @@ if total_items > 0:
                         pedido_detalle += f"- {i['cantidad']} unid. | {i['nombre']} | $ {i['precio_venta']} c/u\n"
                     
                     payload = {
+                        "_subject": f"🚨 NUEVO PEDIDO - {st.session_state.vendedor_nombre} (Cliente: {cliente_final})",
                         "Vendedor": st.session_state.vendedor_nombre,
                         "Cliente_Final": cliente_final,
                         "Direccion": direccion,
@@ -437,8 +438,15 @@ if total_items > 0:
             if export_rows:
                 df_ex = pd.DataFrame(export_rows)
                 buffer = io.BytesIO()
+                
+                # Limpiar el nombre del cliente para que sea un nombre de pestaña válido (Excel permite máx 31 caracteres)
+                nombre_pestana = f"Pedido {cliente_final}"
+                nombre_pestana = "".join([c for c in nombre_pestana if c.isalnum() or c == " "])[:31]
+                if not nombre_pestana.strip():
+                    nombre_pestana = "Lista de Precios"
+                    
                 with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
-                    df_ex.to_excel(writer, index=False, sheet_name="Lista Vineria")
+                    df_ex.to_excel(writer, index=False, sheet_name=nombre_pestana)
                 
                 st.download_button(label="📊 Excel", data=buffer.getvalue(), file_name=f"Lista_{cliente_final}.xlsx", mime="application/vnd.ms-excel", use_container_width=True)
                 
