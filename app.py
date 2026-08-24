@@ -557,7 +557,7 @@ def modal_venta(nombre, img_front, descripcion, pvp_redondeado, costo_redondeado
         if not modo_vidriera:
             c1, c2 = st.columns(2)
             with c1:
-                cant = st.number_input("Cantidad", min_value=1, max_value=100, value=1)
+                cant = st.selectbox("Cantidad", options=list(range(1, 101)), index=0)
             with c2:
                 precio = st.number_input("Precio a cobrar", min_value=int(costo_redondeado), value=int(precio_sugerido), step=100)
                 
