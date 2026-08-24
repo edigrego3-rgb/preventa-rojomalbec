@@ -623,3 +623,45 @@ Este Mole de Autor es un homenaje a la tierra cocida y a los métodos inmemorial
 3. **La Emulsión:** Llevá a ebullición suave y revolvé por 1 a 2 minutos. Los almidones del ñaco atraparán el líquido formando una salsa aterciopelada y brillante.
 
 *(⚠️ Contiene Gluten y Sésamo).*
+
+
+### Té Verde del Zoco
+*"Inspirado en el clásico té a la menta del Magreb, con un giro de autor."*
+
+Este blend de autor de la línea **Tierra Lotus** combina el clásico té a la menta marroquí con un toque distintivo. La base de Té Verde Gunpowder (Pekoe) se entrelaza con la menta Nana, aportando un dulzor natural sin ser invasiva. Las notas altas del lemongrass y el corazón de jengibre y especias machacadas logran un perfil exótico, brillante y sumamente refrescante.
+
+☕ **Ritual de Preparación (Recomendación del Blender):**
+1. **La Temperatura:** 80°C *(¡NUNCA hirviendo! Por encima de 85°C el té verde genera amargor astringente).*
+2. **El Tiempo:** 2.5 a 3 minutos *(El té verde se extrae rápido; más tiempo es más amargor, no más sabor).*
+3. **La Medida:** 1 cucharadita colmada (3-4g) por 200ml de agua.
+4. **Iced Tea de Verano:** Doble concentración, reposar 3 min y colar directo sobre hielo.
+
+**Ingredientes:** Té Verde Pekoe, Menta, Lemongrass, Durazno, Manzana, Jengibre, Cardamomo, Coriandro y Pétalos de Rosa.
+
+### Té Pu-Erh
+*"La arquitectura de este blend radica en domar la inmensidad de la tierra. Ingeniería botánica reducida a su expresión más esencial: menos elementos, mayor verdad."*
+
+Una edición de guarda de la línea **Tierra Lotus**. El Té Rojo Fermentado (Pu-erh) de Yunnan posee un alma densa, antigua y casi mística. La cáscara de mandarina (Chenpi) le da luz, anclando su dulzor terroso a la profundidad de la hoja. La Canela de Ceilán y el Jengibre actúan como puente entre esa luz cítrica y la oscuridad cavernosa de la madera. Perfil de madera dulce, sotobosque húmedo y un retrogusto sumamente cálido.
+
+☕ **Ritual de Preparación (Recomendación del Blender):**
+1. **Infusión Occidental:** 2g por 200ml de agua a 95°C (4-5 minutos). Licor cobrizo y denso, perfecto para la sobremesa.
+2. **Infusión Oriental:** 5g por 100ml a 95°C (Múltiples extracciones cortas de 30 seg). Permite sentir la evolución en taza.
+3. **Maridaje:** Acompañar con chocolate oscuro (>70% cacao). El cítrico corta la untuosidad sin competir en intensidad.
+
+**Ingredientes:** Té Shou Pu-erh (Yunnan), Cáscara de Mandarina (Chenpi), Canela de Ceilán y Jengibre Deshidratado.
+
+### Dry Hot Honey
+*"Ingeniería de Color Triple & Reología Dual · Picor Multicapa"*
+
+Una miel picante deshidratada de vanguardia (Fórmula V5 Definitiva). Su perfil sensorial combina una miel aromática dulce con un picor balanceado en dos fases, una salinidad acética estilo New York (gracias a la Sal British) y un fondo a toffee de leña aportado por la malta caramelo.
+
+🌶️ **Sistema de Picor Multicapa:**
+- **Ataque Sutil:** El Chile Chaotian y la Pimienta Sichuan actúan en la punta de la lengua con un cosquilleo cítrico y un picor agradable de entrada.
+- **Retrogusto:** El Gochugaru y el Ají Panca aportan un calor dulce, ahumado y persistente en la garganta con matices frutales.
+
+👨‍🍳 **Modos de Uso Recomendados:**
+1. **Como Salsa Reconstituida:** Mezclá 2 partes de polvo con 1 parte de agua tibia. Agitá enérgicamente por 30 segundos hasta que se hidrate y genere la viscosidad y el "hilo continuo" de la miel real.
+2. **Como Dry Rub (En Seco):** Espolvoreá directo sobre pollo frito caliente, pizza recién horneada, hamburguesas o queso brie. El calor residual del plato fundirá la miel liberando los aromas intensos de los chiles.
+
+**Ingredientes Estrella:** Miel de abeja en polvo, Chile Chaotian, Sal British (Sal Marina con vinagre de Malta), Chile Gochugaru, Maqui Berry, Ají Panca y Pimienta Sichuan.
+*(⚠️ Contiene Gluten - Cebada).*

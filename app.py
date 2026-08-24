@@ -28,12 +28,12 @@ if "autenticado" not in st.session_state:
     st.session_state.autenticado = False
 
 if not st.session_state.autenticado:
-    st.markdown("<h2 style='text-align:center; color:#d4af37;'>ðŸ”’ Acceso Preventistas</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align:center;'>Por favor ingresÃ¡ tu clave para acceder al sistema.</p>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align:center; color:#d4af37;'>🔒 Acceso Preventistas</h2>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center;'>Por favor ingresá tu clave para acceder al sistema.</p>", unsafe_allow_html=True)
     
     col_l1, col_l2, col_l3 = st.columns([1,2,1])
     with col_l2:
-        clave = st.text_input("ContraseÃ±a", type="password")
+        clave = st.text_input("Contraseña", type="password")
         if st.button("Ingresar", use_container_width=True, type="primary"):
             if clave == "Rush2112":
                 st.session_state.autenticado = True
@@ -166,7 +166,7 @@ def buscar_imagenes(nombre_producto):
     elif "bosque y brasas" in term: term = "bosque"
     elif "kebab" in term: term = "kebab"
     elif "panko" in term or "sesamo y limon" in term: term = "sesamo"
-    elif "espaÃ±a profunda" in term or "espana" in term: term = "espana"
+    elif "españa profunda" in term or "espana" in term: term = "espana"
     elif "glÃ¼hwein" in term or "gluhwein" in term: term = "gluhwein"
     elif "mocktail" in term: term = "botanico"
     elif "panch" in term: term = "panch"
@@ -190,11 +190,11 @@ def buscar_imagenes(nombre_producto):
     else:
         term = term.replace(" ", "")
         
-    term = term.replace("&", "").replace("(", "").replace(")", "").replace("Ã±", "n").replace("Ã¼", "u").replace("'", "").replace("Å", "o")
+    term = term.replace("&", "").replace("(", "").replace(")", "").replace("ñ", "n").replace("Ã¼", "u").replace("'", "").replace("Å", "o")
     
     archivos_validos = []
     for f in os.listdir(img_dir):
-        f_limpio = f.lower().replace("Ã±", "n")
+        f_limpio = f.lower().replace("ñ", "n")
         if "trasera" in f_limpio or "back" in f_limpio:
             continue
         f_sin_espacios = f_limpio.replace("_", "").replace(" ", "")
@@ -220,7 +220,7 @@ MAP_CODIGOS_POS = {
     "za'atar": 'RM-BLE-ZAA', 'zaatar': 'RM-BLE-ZAA', 'sloopy joe': 'RM-BLE-SLO', 'sloppy joe': 'RM-BLE-SLO',
     'gluhwein': 'RM-BLE-GLU', 'glÃ¼hwein': 'RM-BLE-GLU', 'panch phoron': 'RM-BLE-PAN', 'pesto siciliano con pistacho': 'RM-BLE-PES',
     'mole mexicano': 'RM-BLE-MOL', 'mole mexicano de autor': 'RM-BLE-MME', 'espana profunda': 'RM-BLE-ESP',
-    'espaÃ±a profunda': 'RM-BLE-ESP', 'dry hot honey': 'RM-BLE-DRY', 'vital caldo': 'RM-VIT-CAL',
+    'españa profunda': 'RM-BLE-ESP', 'dry hot honey': 'RM-BLE-DRY', 'vital caldo': 'RM-VIT-CAL',
     'vital italia': 'RM-VIT-ITA', 'vital india': 'RM-VIT-IND', 'vital parrilera': 'RM-VIT-PAR',
     'vital criollo': 'RM-VIT-CRI', 'vital citrus': 'RM-VIT-CIT', 'vital tipo queso': 'RM-VIT-QUE',
     'vital tipo queso Â· perfil parmesano reserva': 'RM-VIT-QUE', 'pimienta negra': 'RM-PIM-NEG',
@@ -250,7 +250,7 @@ def detectar_categoria(nombre):
     if "sal" in n or "sales" in n: return "ðŸ§‚ Sales"
     if "blend" in n: return "ðŸŒ¿ Blends"
     if "vital" in n: return "ðŸ’š Vital"
-    if "te " in n or "tÃ© " in n or n.startswith("te ") or n.startswith("tÃ© "): return "ðŸµ TÃ©s"
+    if "te " in n or "té " in n or n.startswith("te ") or n.startswith("té "): return "ðŸµ Tés"
     if "mocktail" in n: return "ðŸ¹ Mocktails"
     if "pimienta" in n: return "ðŸŒ¶ï¸ Pimientas"
     return "ðŸ  Otros"
@@ -269,13 +269,13 @@ if not st.session_state.vendedor_nombre:
     st.markdown("<h2 style='text-align:center; color:#d4af37;'>ðŸ‘‹ Bienvenido a Preventa</h2>", unsafe_allow_html=True)
     with st.container():
         st.markdown("<div style='background:#1a1a24; padding:20px; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.5); max-width:400px; margin:auto; color:white; border:1px solid #333;'>", unsafe_allow_html=True)
-        nombre_input = st.text_input("IngresÃ¡ tu nombre para tomar pedidos:", placeholder="Ej: Juan PÃ©rez")
-        if st.button("Ingresar al CatÃ¡logo", type="primary", use_container_width=True):
+        nombre_input = st.text_input("Ingresá tu nombre para tomar pedidos:", placeholder="Ej: Juan Pérez")
+        if st.button("Ingresar al Catálogo", type="primary", use_container_width=True):
             if nombre_input:
                 st.session_state.vendedor_nombre = nombre_input
                 st.rerun()
             else:
-                st.error("Por favor, ingresÃ¡ tu nombre.")
+                st.error("Por favor, ingresá tu nombre.")
         st.markdown("</div>", unsafe_allow_html=True)
     st.stop()
 
@@ -309,11 +309,11 @@ st.markdown("<hr style='margin-top:0; border-color:#333;'>", unsafe_allow_html=T
 
 # --- CALCULADORA GLOBAL DE MARGEN ---
 with st.expander("ðŸ§® CALCULADORA DE GANANCIAS (Margen Base)", expanded=False):
-    st.markdown("ElegÃ­ el porcentaje de ganancia base. Se aplicarÃ¡ a todo el catÃ¡logo como sugerencia, pero podÃ©s ajustar el precio manualmente debajo de cada producto.")
+    st.markdown("Elegí el porcentaje de ganancia base. Se aplicará a todo el catálogo como sugerencia, pero podés ajustar el precio manualmente debajo de cada producto.")
     nuevo_margen = st.slider("Margen sugerido (%)", min_value=0, max_value=150, value=st.session_state.margen_global, step=5)
     if nuevo_margen != st.session_state.margen_global:
         st.session_state.margen_global = nuevo_margen
-        # Limpiar los inputs cacheados para forzar el recÃ¡lculo visual
+        # Limpiar los inputs cacheados para forzar el recálculo visual
         for key in list(st.session_state.keys()):
             if key.startswith("precio_"):
                 del st.session_state[key]
@@ -339,7 +339,7 @@ if total_items > 0:
                 with cols_cart[0]:
                     st.write(f"A ${item_data['precio_venta']:,} c/u")
                 with cols_cart[1]:
-                    # Selectbox tambiÃ©n en el carrito
+                    # Selectbox también en el carrito
                     opciones_cart = list(range(0, 101))
                     if item_data['cantidad'] not in opciones_cart:
                         opciones_cart.append(item_data['cantidad'])
@@ -366,13 +366,13 @@ if total_items > 0:
         
         st.markdown("#### Datos de Entrega")
         cliente_final = st.text_input("Local / Cliente final", key="cliente_final")
-        direccion = st.text_input("DirecciÃ³n", key="cliente_dir")
+        direccion = st.text_input("Dirección", key="cliente_dir")
         
         c_enviar, c_mail, c_excel = st.columns([1, 1, 1])
         with c_enviar:
             if st.button("ðŸŸ¢ WhatsApp", use_container_width=True):
                 if not cliente_final:
-                    st.error("IngresÃ¡ el cliente.")
+                    st.error("Ingresá el cliente.")
                 else:
                     d_v = {"nombre_vendedor": st.session_state.vendedor_nombre, "cliente_final": cliente_final, "direccion": direccion}
                     link = generar_mensaje_whatsapp(items_carrito, total_costo, total_venta, "5493544308380", d_v)
@@ -380,7 +380,7 @@ if total_items > 0:
         with c_mail:
             if st.button("ðŸ“§ Email", use_container_width=True):
                 if not cliente_final:
-                    st.error("IngresÃ¡ el cliente.")
+                    st.error("Ingresá el cliente.")
                 else:
                     import json
                     import urllib.request
@@ -410,7 +410,7 @@ if total_items > 0:
                     )
                     try:
                         urllib.request.urlopen(req)
-                        st.success("âœ… Â¡Mail enviado con Ã©xito!")
+                        st.success("âœ… Â¡Mail enviado con éxito!")
                     except Exception as e:
                         st.error(f"Hubo un error al enviar el mail: {e}")
         with c_excel:
@@ -433,7 +433,7 @@ if total_items > 0:
                     elif "VIT-" in cod_pos:
                         cat = "ðŸ’š Vital"
                     elif "TEA-" in cod_pos:
-                        cat = "ðŸµ TÃ©s"
+                        cat = "ðŸµ Tés"
                     elif "PIM-" in cod_pos:
                         cat = "ðŸŒ¶ï¸ Pimientas"
                     else:
@@ -452,12 +452,12 @@ if total_items > 0:
                     pvp_redondeado = redondear_precio(pvp_final)
 
                     export_rows.append({
-                        "CategorÃ­a": cat,
+                        "Categoría": cat,
                         "Producto": item['nombre'],
                         "Cantidad": item['cantidad'],
                         "Gramaje (g)": gramaje,
-                        "CÃ³digo Lote": cod_lote,
-                        "CÃ³digo POS / Barras": cod_pos,
+                        "Código Lote": cod_lote,
+                        "Código POS / Barras": cod_pos,
                         "Precio Venta": item['precio_venta'],
                         "PVP Sugerido": pvp_redondeado
                     })
@@ -465,7 +465,7 @@ if total_items > 0:
                 df_ex = pd.DataFrame(export_rows)
                 buffer = io.BytesIO()
                 
-                # Limpiar el nombre del cliente para que sea un nombre de pestaÃ±a vÃ¡lido (Excel permite mÃ¡x 31 caracteres)
+                # Limpiar el nombre del cliente para que sea un nombre de pestaña válido (Excel permite máx 31 caracteres)
                 nombre_pestana = f"Pedido {cliente_final}"
                 nombre_pestana = "".join([c for c in nombre_pestana if c.isalnum() or c == " "])[:31]
                 if not nombre_pestana.strip():
@@ -481,11 +481,11 @@ if total_items > 0:
             st.rerun()
 
 # --- CARGAR CATÃLOGO ---
-with st.spinner("Actualizando catÃ¡logo..."):
+with st.spinner("Actualizando catálogo..."):
     df_catalogo = load_catalog_data()
 
 if df_catalogo.empty:
-    st.error("No se pudo cargar el catÃ¡logo. Contacte a administraciÃ³n.")
+    st.error("No se pudo cargar el catálogo. Contacte a administración.")
     st.stop()
 
 df_catalogo["Categoria"] = df_catalogo["Nombre"].apply(detectar_categoria)
@@ -498,13 +498,13 @@ df_catalogo = df_catalogo[df_catalogo["Visible_B2B"] == True]
 st.markdown('''
 <div style='background-color:#fff3cd; padding:10px; border-radius:10px; border-left:5px solid #ffc107; margin-bottom:15px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05);'>
     <div style='display:flex; justify-content:space-between; font-weight:bold; color:#856404;'>
-        <span>ðŸ† Meta del DÃ­a: 100 Envases</span>
-        <span>LlevÃ¡s: 74 Envases</span>
+        <span>ðŸ† Meta del Día: 100 Envases</span>
+        <span>Llevás: 74 Envases</span>
     </div>
     <div style='background:#e9ecef; border-radius:5px; height:10px; margin-top:5px; overflow:hidden;'>
         <div style='background:#ffc107; height:10px; width:74%;'></div>
     </div>
-    <div style='font-size:0.8rem; color:#856404; margin-top:5px;'>ðŸ”¥ Â¡EstÃ¡s a solo 26 envases de tu bono diario!</div>
+    <div style='font-size:0.8rem; color:#856404; margin-top:5px;'>ðŸ”¥ Â¡Estás a solo 26 envases de tu bono diario!</div>
 </div>
 ''', unsafe_allow_html=True)
 
@@ -520,7 +520,7 @@ with c_buscar:
     search = st.text_input("ðŸ” Buscar producto...", placeholder="Ej: Sal, Curry...", label_visibility="collapsed")
 with c_mic:
     if st.button("ðŸŽ™ï¸", use_container_width=True):
-        st.toast("ðŸ”´ Grabando... 'Armame un pedido de 3 sales...' (PrÃ³ximamente conectaremos la IA)")
+        st.toast("ðŸ”´ Grabando... 'Armame un pedido de 3 sales...' (Próximamente conectaremos la IA)")
     
 
 
@@ -538,7 +538,7 @@ def modal_venta(nombre, img_front, descripcion, pvp_redondeado, costo_redondeado
     qty_actual = st.session_state.carrito.get(nombre, {}).get("cantidad", 0)
     
     if qty_actual > 0:
-        st.success(f"Â¡Ya tenÃ©s {qty_actual} en el pedido!")
+        st.success(f"Â¡Ya tenés {qty_actual} en el pedido!")
         if st.button("ðŸ—‘ï¸ Quitar del pedido", use_container_width=True):
             del st.session_state.carrito[nombre]
             st.rerun()
@@ -570,7 +570,7 @@ def get_real_category(nombre, cod_lote):
     if "SAL-" in cod_pos: return "ðŸ§‚ Sales"
     if "BLE-" in cod_pos: return "ðŸŒ¿ Blends"
     if "VIT-" in cod_pos: return "ðŸ’š Vital"
-    if "TEA-" in cod_pos: return "ðŸµ TÃ©s"
+    if "TEA-" in cod_pos: return "ðŸµ Tés"
     if "PIM-" in cod_pos: return "ðŸŒ¶ï¸ Pimientas"
     return "ðŸ  Otros"
 
@@ -606,12 +606,12 @@ with st.expander("ðŸ“Š MIS ESTADÃSTICAS (Agosto)", expanded=False):
 <div class='top-item' style='padding-left:15px; font-size:0.85rem; border-bottom:none;'><span>â†³ Ajo a las Hierbas</span><b style='color:#555;'>54 unid.</b></div>
 <div class='top-item' style='padding-left:15px; font-size:0.85rem;'><span>â†³ Curry Colombo</span><b style='color:#555;'>30 unid.</b></div>
 <div class='top-item' style='background:#f8f9fa; margin-top:10px;'><span style='color:#222;'>ðŸµ <b>TÃ‰S (30 envases totales)</b></span></div>
-<div class='top-item' style='padding-left:15px; font-size:0.85rem; border-bottom:none;'><span>â†³ TÃ© Karak</span><b style='color:#555;'>30 unid.</b></div>
+<div class='top-item' style='padding-left:15px; font-size:0.85rem; border-bottom:none;'><span>â†³ Té Karak</span><b style='color:#555;'>30 unid.</b></div>
 </div>
     ''', unsafe_allow_html=True)
 
 # --- CATÃLOGO POR ACORDEONES (LISTA CON ONDA) ---
-categorias_list = ["ðŸ§‚ Sales", "ðŸŒ¿ Blends", "ðŸµ TÃ©s", "ðŸŒ¶ï¸ Pimientas", "ðŸ  Otros"]
+categorias_list = ["ðŸ§‚ Sales", "ðŸŒ¿ Blends", "ðŸµ Tés", "ðŸŒ¶ï¸ Pimientas", "ðŸ  Otros"]
 
 st.markdown('''
 <style>
@@ -678,7 +678,7 @@ for cat in categorias_list:
             if st.button(f"{badge} {nombre}", key=f"btn_{cat}_{idx}", use_container_width=True):
                 soplon = ""
                 if not modo_vidriera:
-                    soplon = "<div style='background-color:#d4af371a; padding:10px; border-radius:8px; border:1px solid #d4af37; margin-bottom:15px; font-size:0.9rem;'>ðŸ”¥ <b>Sugerencia IA:</b> Quien lleva este producto suele pedir tambiÃ©n <b>Pimienta Roja Larga</b>. Â¡Ofrecela por $ 6.500 extra!</div>"
+                    soplon = "<div style='background-color:#d4af371a; padding:10px; border-radius:8px; border:1px solid #d4af37; margin-bottom:15px; font-size:0.9rem;'>ðŸ”¥ <b>Sugerencia IA:</b> Quien lleva este producto suele pedir también <b>Pimienta Roja Larga</b>. Â¡Ofrecela por $ 6.500 extra!</div>"
                 
                 desc_html = soplon + (f"<div class='desc-text'><b>Info:</b> {descripcion}</div>" if descripcion else "")
                 modal_venta(nombre, img_front, desc_html, pvp_redondeado, costo_redondeado, modo_vidriera)
