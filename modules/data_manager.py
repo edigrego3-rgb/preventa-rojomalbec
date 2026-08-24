@@ -85,6 +85,27 @@ def get_vendedores():
     except Exception as e:
         return ["Vendedor Autorizado"]
 
+
+@st.cache_data(ttl=60) # Refresco rapido para que tome las claves al instante
+def get_vendedores_auth():
+    gc = get_connection()
+    if not gc:
+        return {"Vendedor Autorizado": "Rush2112"}
+    try:
+        sh = gc.open(SHEET_NAME)
+        ws = sh.worksheet("vendedores")
+        raw_data = ws.get_all_records(default_blank="")
+        auth_dict = {}
+        for row in raw_data:
+            nombre = str(row.get("Nombre", "")).strip()
+            clave = str(row.get("Clave", "")).strip()
+            activo = str(row.get("Activo", "True")).strip().lower()
+            if nombre and activo in ["true", "1", "sí", "si", "yes"]:
+                auth_dict[nombre] = clave
+        return auth_dict if auth_dict else {"Vendedor Autorizado": "Rush2112"}
+    except Exception as e:
+        return {"Vendedor Autorizado": "Rush2112"}
+
 def guardar_visibilidad(nombres_visibles, todos_los_nombres):
     """
     Guarda en la hoja de Google Sheets qué productos son visibles en el B2B.
