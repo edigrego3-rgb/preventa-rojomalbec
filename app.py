@@ -281,7 +281,7 @@ if 'margen_global' not in st.session_state:
 
 
 # --- CARGA DE ESTADISTICAS REALES ---
-stats = {'Ganancia_Neta': 0.0, 'Total_Envases': 0, 'Categorias': {'Sales': 0, 'Blends': 0, 'Tés': 0, 'Pimientas': 0, 'Otros': 0}}
+stats = {'Comisiones': 0.0, 'Total_Envases': 0, 'Categorias': {'Sales': 0, 'Blends': 0, 'Tés': 0, 'Pimientas': 0, 'Otros': 0}}
 if st.session_state.get('vendedor_nombre'):
     try:
         stats = get_estadisticas_vendedor(st.session_state.vendedor_nombre)
@@ -601,7 +601,7 @@ st.markdown('''
 with st.expander("📊 MIS ESTADÍSTICAS (Mensuales)", expanded=False):
     c1, c2 = st.columns(2)
     with c1:
-        st.markdown(f"<div class='stat-box'><div class='stat-title'>Ganancia Neta</div><div class='stat-value'>$ {stats['Ganancia_Neta']:,.0f}</div></div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='stat-box'><div class='stat-title'>Mis Comisiones</div><div class='stat-value'>$ {stats['Comisiones']:,.0f}</div></div>", unsafe_allow_html=True)
     with c2:
         st.markdown(f"<div class='stat-box'><div class='stat-title'>Envases Vendidos</div><div class='stat-value'>{stats['Total_Envases']} unid.</div></div>", unsafe_allow_html=True)
         
