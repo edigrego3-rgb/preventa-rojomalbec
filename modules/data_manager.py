@@ -69,6 +69,22 @@ def load_catalog_data():
         st.error(f"Error descargando datos: {e}")
         return pd.DataFrame()
 
+
+@st.cache_data(ttl=3600)
+def get_vendedores():
+    gc = get_connection()
+    if not gc:
+        return ["Vendedor Autorizado"]
+    
+    try:
+        sh = gc.open(SHEET_NAME)
+        ws = sh.worksheet("vendedores")
+        raw_data = ws.col_values(1) # Asumimos que los nombres estan en la columna A
+        vendedores = [v.strip() for v in raw_data if v.strip() and v.lower() not in ['nombre', 'vendedor', 'vendedores']]
+        return vendedores if vendedores else ["Vendedor Autorizado"]
+    except Exception as e:
+        return ["Vendedor Autorizado"]
+
 def guardar_visibilidad(nombres_visibles, todos_los_nombres):
     """
     Guarda en la hoja de Google Sheets qué productos son visibles en el B2B.
