@@ -592,7 +592,7 @@ st.markdown('''
 with st.expander("📊 MIS ESTADÍSTICAS (Agosto)", expanded=False):
     c1, c2 = st.columns(2)
     with c1:
-        st.markdown("<div class='stat-box'><div class='stat-title'>Ganancia Neta</div><div class='stat-value'>$ 345.500</div></div>", unsafe_allow_html=True)
+        st.markdown("<div class='stat-box'><div class='stat-title'>Ganancia Neta</div><div class='stat-value'>$ 0</div></div>", unsafe_allow_html=True)
     with c2:
         st.markdown("<div class='stat-box'><div class='stat-title'>Envases Vendidos</div><div class='stat-value'>0 unid.</div></div>", unsafe_allow_html=True)
         
@@ -679,7 +679,7 @@ for cat in categorias_list:
             if st.button(f"{badge} {nombre}", key=f"btn_{cat}_{idx}", use_container_width=True):
                 soplon = ""
                 if not modo_vidriera:
-                    soplon = "<div style='background-color:#d4af371a; padding:10px; border-radius:8px; border:1px solid #d4af37; margin-bottom:15px; font-size:0.9rem;'>🔥 <b>Sugerencia IA:</b> Quien lleva este producto suele pedir también <b>Pimienta Roja Larga</b>. ¡Ofrecela por $ 6.500 extra!</div>"
+                    soplon = "<div style='background-color:#d4af371a; padding:10px; border-radius:8px; border:1px solid #d4af37; margin-bottom:15px; font-size:0.9rem;'>🔥 <b>Sugerencia IA:</b> Quien lleva este producto suele pedir también <b>Pimienta Roja Larga</b>. ¡Ofrecela por $ 0 extra!</div>"
                 
                 desc_html = soplon + (f"<div class='desc-text'><b>Info:</b> {descripcion}</div>" if descripcion else "")
                 modal_venta(nombre, img_front, desc_html, pvp_redondeado, costo_redondeado, modo_vidriera)
