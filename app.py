@@ -11,13 +11,13 @@ if current_dir not in sys.path:
 from modules.data_manager import load_catalog_data, guardar_visibilidad
 from modules.utils import redondear_precio, extraer_descripcion, generar_mensaje_whatsapp
 
-# --- CONFIGURACIÃ“N DE PÃGINA ---
+# --- CONFIGURACIÓN DE PÁGINA ---
 if "sidebar_state" not in st.session_state:
     st.session_state.sidebar_state = "collapsed"
 
 st.set_page_config(
     page_title="Herramienta Preventa | Rojo Malbec",
-    page_icon="ðŸ·",
+    page_icon="🍷",
     layout="wide",
     initial_sidebar_state=st.session_state.sidebar_state
 )
@@ -47,7 +47,7 @@ if not st.session_state.autenticado:
 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2🍵family=Inter:wght@400;500;600;700;800&display=swap');
 
 [data-testid="stAppViewContainer"] {
     background: linear-gradient(165deg, #0a0a0f 0%, #111118 50%, #0d0d14 100%);
@@ -149,7 +149,7 @@ footer {visibility: hidden !important; display: none !important;}
 </style>
 """, unsafe_allow_html=True)
 
-# --- UTILIDADES PARA IMÃGENES ---
+# --- UTILIDADES PARA IMÁGENES ---
 def buscar_imagenes(nombre_producto):
     img_dir = os.path.join(current_dir, "images")
     if not os.path.exists(img_dir):
@@ -167,7 +167,7 @@ def buscar_imagenes(nombre_producto):
     elif "kebab" in term: term = "kebab"
     elif "panko" in term or "sesamo y limon" in term: term = "sesamo"
     elif "españa profunda" in term or "espana" in term: term = "espana"
-    elif "glÃ¼hwein" in term or "gluhwein" in term: term = "gluhwein"
+    elif "gluhwein"
     elif "mocktail" in term: term = "botanico"
     elif "panch" in term: term = "panch"
     elif "criolla deshidratada" in term: term = "criolla"
@@ -190,7 +190,7 @@ def buscar_imagenes(nombre_producto):
     else:
         term = term.replace(" ", "")
         
-    term = term.replace("&", "").replace("(", "").replace(")", "").replace("ñ", "n").replace("Ã¼", "u").replace("'", "").replace("Å", "o")
+    term = term.replace("ó", "o")
     
     archivos_validos = []
     for f in os.listdir(img_dir):
@@ -218,12 +218,12 @@ MAP_CODIGOS_POS = {
     'ajo a las hierbas gourmet': 'RM-BLE-AJO', 'bbq': 'RM-BLE-BBQ', 'bbq rojo malbec': 'RM-BLE-BBQ',
     'curry colombo': 'RM-BLE-COL', 'nanami togarashi': 'RM-BLE-NAN', 'nanami tÅgarashi': 'RM-BLE-NAN',
     "za'atar": 'RM-BLE-ZAA', 'zaatar': 'RM-BLE-ZAA', 'sloopy joe': 'RM-BLE-SLO', 'sloppy joe': 'RM-BLE-SLO',
-    'gluhwein': 'RM-BLE-GLU', 'glÃ¼hwein': 'RM-BLE-GLU', 'panch phoron': 'RM-BLE-PAN', 'pesto siciliano con pistacho': 'RM-BLE-PES',
+    'gluhwein': 'RM-BLE-GLU', 'panch phoron': 'RM-BLE-PAN', 'pesto siciliano con pistacho': 'RM-BLE-PES',
     'mole mexicano': 'RM-BLE-MOL', 'mole mexicano de autor': 'RM-BLE-MME', 'espana profunda': 'RM-BLE-ESP',
     'españa profunda': 'RM-BLE-ESP', 'dry hot honey': 'RM-BLE-DRY', 'vital caldo': 'RM-VIT-CAL',
     'vital italia': 'RM-VIT-ITA', 'vital india': 'RM-VIT-IND', 'vital parrilera': 'RM-VIT-PAR',
     'vital criollo': 'RM-VIT-CRI', 'vital citrus': 'RM-VIT-CIT', 'vital tipo queso': 'RM-VIT-QUE',
-    'vital tipo queso Â· perfil parmesano reserva': 'RM-VIT-QUE', 'pimienta negra': 'RM-PIM-NEG',
+    'vital tipo queso · perfil parmesano reserva': 'RM-VIT-QUE', 'pimienta negra': 'RM-PIM-NEG',
     'pimienta negra de autor': 'RM-PIM-NEG', 'pimienta roja y larga': 'RM-PIM-ROJ', 'pimienta roja y pimienta larga': 'RM-PIM-ROJ',
     'pimienta verde': 'RM-PIM-VER', 'pimienta verde de autor': 'RM-PIM-VER', 'te pu-erh': 'RM-TEA-PUE',
     'te pu erh': 'RM-TEA-PUE', 'te pu-erh rojo malbec': 'RM-TEA-PUE', 'rooibos ambar': 'RM-TEA-ROO',
@@ -250,10 +250,10 @@ def detectar_categoria(nombre):
     if "sal" in n or "sales" in n: return "ðŸ§‚ Sales"
     if "blend" in n: return "🌿 Blends"
     if "vital" in n: return "💚 Vital"
-    if "te " in n or "té " in n or n.startswith("te ") or n.startswith("té "): return "ðŸµ Tés"
-    if "mocktail" in n: return "ðŸ¹ Mocktails"
+    if "te " in n or "té " in n or n.startswith("te ") or n.startswith("té "): return "🍵 Tés"
+    if "mocktail" in n: return "🍹 Mocktails"
     if "pimienta" in n: return "🌶️ Pimientas"
-    return "ðŸ  Otros"
+    return "📦 Otros"
 
 # --- ESTADO INICIAL ---
 if 'carrito' not in st.session_state:
@@ -263,14 +263,14 @@ if 'vendedor_nombre' not in st.session_state:
 if 'margen_global' not in st.session_state:
     st.session_state.margen_global = 30
 
-# --- IDENTIFICACIÃ“N DEL VENDEDOR ---
+# --- IDENTIFICACIÓN DEL VENDEDOR ---
 if not st.session_state.vendedor_nombre:
     st.markdown("<br><br>", unsafe_allow_html=True)
-    st.markdown("<h2 style='text-align:center; color:#d4af37;'>ðŸ‘‹ Bienvenido a Preventa</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align:center; color:#d4af37;'>🔒 Bienvenido a Preventa</h2>", unsafe_allow_html=True)
     with st.container():
         st.markdown("<div style='background:#1a1a24; padding:20px; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.5); max-width:400px; margin:auto; color:white; border:1px solid #333;'>", unsafe_allow_html=True)
         nombre_input = st.text_input("Ingresá tu nombre para tomar pedidos:", placeholder="Ej: Juan Pérez")
-        if st.button("Ingresar al Catálogo", type="primary", use_container_width=True):
+        if st.button("🎙️", use_container_width=True):
             if nombre_input:
                 st.session_state.vendedor_nombre = nombre_input
                 st.rerun()
@@ -287,13 +287,13 @@ with col_logo:
     if os.path.exists(ruta_logo):
         st.image(ruta_logo, use_container_width=True)
     else:
-        st.markdown("<h1 style='text-align:center;'>ðŸ·</h1>", unsafe_allow_html=True)
+        st.markdown("<h1 style='text-align:center;'>🔒</h1>", unsafe_allow_html=True)
 
 with col_titulo:
     st.markdown(f"""
         <div style='padding-top: 10px;'>
-            <h1 style='margin:0; font-size:2rem; color:#d4af37;'>Rojo Malbec</h1>
-            <span style='color:#a0a0b0; font-size:1.1rem;'>Herramienta de Preventa - ðŸ‘¤ {st.session_state.vendedor_nombre}</span>
+            <h1 style='text-align:center;'>🔒</h1>
+            <span style='color:#a0a0b0; font-size:1.1rem;'>Herramienta de Preventa - 🧑‍💼 {st.session_state.vendedor_nombre}</span>
         </div>
     """, unsafe_allow_html=True)
 
@@ -308,7 +308,7 @@ with col_cart:
 st.markdown("<hr style='margin-top:0; border-color:#333;'>", unsafe_allow_html=True)
 
 # --- CALCULADORA GLOBAL DE MARGEN ---
-with st.expander("ðŸ§® CALCULADORA DE GANANCIAS (Margen Base)", expanded=False):
+with st.expander("🧮 CALCULADORA DE GANANCIAS (Margen Base)", expanded=False):
     st.markdown("Elegí el porcentaje de ganancia base. Se aplicará a todo el catálogo como sugerencia, pero podés ajustar el precio manualmente debajo de cada producto.")
     nuevo_margen = st.slider("Margen sugerido (%)", min_value=0, max_value=150, value=st.session_state.margen_global, step=5)
     if nuevo_margen != st.session_state.margen_global:
@@ -322,7 +322,7 @@ with st.expander("ðŸ§® CALCULADORA DE GANANCIAS (Margen Base)", expanded=Fal
 # --- CARRITO INTEGRADO ---
 if total_items > 0:
     with st.expander(f"🛒 VER MI PEDIDO ({total_items} productos)", expanded=False):
-        st.markdown("### ðŸ“ Resumen del Pedido")
+        st.markdown("### 🛒 Resumen del Pedido")
         total_costo = 0
         total_venta = 0
         items_carrito = []
@@ -370,7 +370,7 @@ if total_items > 0:
         
         c_enviar, c_mail, c_excel = st.columns([1, 1, 1])
         with c_enviar:
-            if st.button("ðŸŸ¢ WhatsApp", use_container_width=True):
+            if st.button("🎙️", use_container_width=True):
                 if not cliente_final:
                     st.error("Ingresá el cliente.")
                 else:
@@ -378,7 +378,7 @@ if total_items > 0:
                     link = generar_mensaje_whatsapp(items_carrito, total_costo, total_venta, "5493544308380", d_v)
                     st.markdown(f"<a href='{link}' target='_blank' style='display:block; text-align:center; background-color:#25D366; color:white; padding:8px; border-radius:5px; text-decoration:none;'>📲 Enviar</a>", unsafe_allow_html=True)
         with c_mail:
-            if st.button("ðŸ“§ Email", use_container_width=True):
+            if st.button("🎙️", use_container_width=True):
                 if not cliente_final:
                     st.error("Ingresá el cliente.")
                 else:
@@ -390,7 +390,7 @@ if total_items > 0:
                         pedido_detalle += f"- {i['cantidad']} unid. | {i['nombre']} | $ {i['precio_venta']} c/u\n"
                     
                     payload = {
-                        "_subject": f"ðŸš¨ NUEVO PEDIDO - {st.session_state.vendedor_nombre} (Cliente: {cliente_final})",
+                        "_subject": f"📦 NUEVO PEDIDO - {st.session_state.vendedor_nombre} (Cliente: {cliente_final})",
                         "Vendedor": st.session_state.vendedor_nombre,
                         "Cliente_Final": cliente_final,
                         "Direccion": direccion,
@@ -433,11 +433,11 @@ if total_items > 0:
                     elif "VIT-" in cod_pos:
                         cat = "💚 Vital"
                     elif "TEA-" in cod_pos:
-                        cat = "ðŸµ Tés"
+                        cat = "🍵 Tés"
                     elif "PIM-" in cod_pos:
                         cat = "🌶️ Pimientas"
                     else:
-                        cat = "ðŸ  Otros"
+                        cat = "📦 Otros"
                         
                     costo_mayorista = float(row.get("Precio_Mayorista", 0))
                     pvp_guardado = float(row.get("PVP_Sugerido", 0))
@@ -474,13 +474,13 @@ if total_items > 0:
                 with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
                     df_ex.to_excel(writer, index=False, sheet_name=nombre_pestana)
                 
-                st.download_button(label="ðŸ“Š Excel", data=buffer.getvalue(), file_name=f"Lista_{cliente_final}.xlsx", mime="application/vnd.ms-excel", use_container_width=True)
+                st.download_button(label="📊 Excel", data=buffer.getvalue(), file_name=f"Lista_{cliente_final}.xlsx", mime="application/vnd.ms-excel", use_container_width=True)
                 
-        if st.button("ðŸ—‘ï¸ Vaciar Carrito", use_container_width=True):
+        if st.button("🎙️", use_container_width=True):
             st.session_state.carrito = {}
             st.rerun()
 
-# --- CARGAR CATÃLOGO ---
+# --- CARGAR CATÁLOGO ---
 with st.spinner("Actualizando catálogo..."):
     df_catalogo = load_catalog_data()
 
@@ -494,11 +494,11 @@ df_catalogo["Categoria"] = df_catalogo["Nombre"].apply(detectar_categoria)
 df_catalogo = df_catalogo[df_catalogo["Visible_B2B"] == True]
 
 
-# --- GAMIFICACIÃ“N Y METAS ---
+# --- GAMIFICACIÓN Y METAS ---
 st.markdown('''
 <div style='background-color:#fff3cd; padding:10px; border-radius:10px; border-left:5px solid #ffc107; margin-bottom:15px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05);'>
     <div style='display:flex; justify-content:space-between; font-weight:bold; color:#856404;'>
-        <span>ðŸ† Meta del Día: 100 Envases</span>
+        <span>🏆 Meta del Día: 100 Envases</span>
         <span>Llevás: 74 Envases</span>
     </div>
     <div style='background:#e9ecef; border-radius:5px; height:10px; margin-top:5px; overflow:hidden;'>
@@ -517,10 +517,10 @@ with c_vidriera:
 
 c_buscar, c_mic = st.columns([4, 1])
 with c_buscar:
-    search = st.text_input("ðŸ” Buscar producto...", placeholder="Ej: Sal, Curry...", label_visibility="collapsed")
+    search = st.text_input("🔍 Buscar producto...", placeholder="Ej: Sal, Curry...", label_visibility="collapsed")
 with c_mic:
-    if st.button("ðŸŽ™ï¸", use_container_width=True):
-        st.toast("ðŸ”´ Grabando... 'Armame un pedido de 3 sales...' (Próximamente conectaremos la IA)")
+    if st.button("🎙️", use_container_width=True):
+        st.toast("🎙️ Grabando... 'Armame un pedido de 3 sales...' (Próximamente conectaremos la IA)")
     
 
 
@@ -539,7 +539,7 @@ def modal_venta(nombre, img_front, descripcion, pvp_redondeado, costo_redondeado
     
     if qty_actual > 0:
         st.success(f"¡Ya tenés {qty_actual} en el pedido!")
-        if st.button("ðŸ—‘ï¸ Quitar del pedido", use_container_width=True):
+        if st.button("🎙️", use_container_width=True):
             del st.session_state.carrito[nombre]
             st.rerun()
     else:
@@ -553,32 +553,32 @@ def modal_venta(nombre, img_front, descripcion, pvp_redondeado, costo_redondeado
             with c2:
                 precio = st.number_input("Precio a cobrar", min_value=int(costo_redondeado), value=int(precio_sugerido), step=100)
                 
-            if st.button("🛒 Confirmar Venta", type="primary", use_container_width=True):
+            if st.button("🎙️", use_container_width=True):
                 st.session_state.carrito[nombre] = {"cantidad": cant, "costo": costo_redondeado, "precio_venta": precio}
                 st.rerun()
         else:
-            st.info("ðŸ›ï¸ Pedile a tu vendedor que escanee este producto para agregarlo.")
+            st.info("📲 Pedile a tu vendedor que escanee este producto para agregarlo.")
 
     if descripcion:
         st.markdown("<hr>", unsafe_allow_html=True)
         st.markdown(descripcion, unsafe_allow_html=True)
 
 
-# --- RECALCULAR CATEGORÃAS REALES SEGÃšN CÃ“DIGO POS ---
+# --- RECALCULAR CATEGORÍAS REALES SEGÚN CÓDIGO POS ---
 def get_real_category(nombre, cod_lote):
     cod_pos = obtener_codigo_vendedor(cod_lote, nombre)
     if "SAL-" in cod_pos: return "ðŸ§‚ Sales"
     if "BLE-" in cod_pos: return "🌿 Blends"
     if "VIT-" in cod_pos: return "💚 Vital"
-    if "TEA-" in cod_pos: return "ðŸµ Tés"
+    if "TEA-" in cod_pos: return "🍵 Tés"
     if "PIM-" in cod_pos: return "🌶️ Pimientas"
-    return "ðŸ  Otros"
+    return "📦 Otros"
 
 for idx, row in df_catalogo.iterrows():
     cod = str(row.get('Codigo', f"L {row['Nombre'][:4].upper()}"))
     df_catalogo.at[idx, 'Categoria'] = get_real_category(row['Nombre'], cod)
 
-# --- ESTADÃSTICAS DEL MES (PROTOTIPO) ---
+# --- ESTADÍSTICAS DEL MES (PROTOTIPO) ---
 st.markdown('''
 <style>
 .stat-box { background-color: #f8f9fa; padding: 15px; border-radius: 10px; border-left: 4px solid #d4af37; margin-bottom: 15px; box-shadow: 2px 2px 5px rgba(0,0,0,0.05); }
@@ -589,7 +589,7 @@ st.markdown('''
 </style>
 ''', unsafe_allow_html=True)
 
-with st.expander("ðŸ“Š MIS ESTADÃSTICAS (Agosto)", expanded=False):
+with st.expander("📈 MIS ESTADÍSTICAS (Agosto)", expanded=False):
     c1, c2 = st.columns(2)
     with c1:
         st.markdown("<div class='stat-box'><div class='stat-title'>Ganancia Neta</div><div class='stat-value'>$ 345.500</div></div>", unsafe_allow_html=True)
@@ -599,18 +599,18 @@ with st.expander("ðŸ“Š MIS ESTADÃSTICAS (Agosto)", expanded=False):
     st.markdown("<h5 style='color:#d4af37; margin-top:5px; font-weight:bold;'>📈 Desglose del Mes</h5>", unsafe_allow_html=True)
     st.markdown('''
 <div style='background:#fff; color:#222; padding:10px; border-radius:8px; border:1px solid #eee; margin-bottom:10px;'>
-<div class='top-item' style='background:#f8f9fa; border-radius:5px 5px 0 0;'><span style='color:#222;'>ðŸ§‚ <b>SALES (100 envases totales)</b></span></div>
+<div class='top-item' style='background:#f8f9fa; border-radius:5px 5px 0 0;'><span style='color:#222;'>🧂 <b>SALES (100 envases totales)</b></span></div>
 <div class='top-item' style='padding-left:15px; font-size:0.85rem; border-bottom:none;'><span>↳ Sal Malbec</span><b style='color:#555;'>85 unid.</b></div>
 <div class='top-item' style='padding-left:15px; font-size:0.85rem;'><span>↳ Sal Hawaiana</span><b style='color:#555;'>15 unid.</b></div>
 <div class='top-item' style='background:#f8f9fa; margin-top:10px;'><span style='color:#222;'>🌿 <b>BLENDS (84 envases totales)</b></span></div>
 <div class='top-item' style='padding-left:15px; font-size:0.85rem; border-bottom:none;'><span>↳ Ajo a las Hierbas</span><b style='color:#555;'>54 unid.</b></div>
 <div class='top-item' style='padding-left:15px; font-size:0.85rem;'><span>↳ Curry Colombo</span><b style='color:#555;'>30 unid.</b></div>
-<div class='top-item' style='background:#f8f9fa; margin-top:10px;'><span style='color:#222;'>ðŸµ <b>TÃ‰S (30 envases totales)</b></span></div>
+<div class='top-item' style='background:#f8f9fa; margin-top:10px;'><span style='color:#222;'>🍵 <b>TÉS (30 envases totales)</b></span></div>
 <div class='top-item' style='padding-left:15px; font-size:0.85rem; border-bottom:none;'><span>↳ Té Karak</span><b style='color:#555;'>30 unid.</b></div>
 </div>
     ''', unsafe_allow_html=True)
 
-# --- CATÃLOGO POR ACORDEONES (LISTA CON ONDA) ---
+# --- CATÁLOGO POR ACORDEONES (LISTA CON ONDA) ---
 categorias_list = ["ðŸ§‚ Sales", "🌿 Blends", "ðŸµ Tés", "🌶️ Pimientas", "ðŸ  Otros"]
 
 st.markdown('''
@@ -673,7 +673,7 @@ for cat in categorias_list:
             img_front, _ = buscar_imagenes(nombre)
             
             qty_actual = st.session_state.carrito.get(nombre, {}).get("cantidad", 0)
-            badge = f"ðŸŸ¢ [{qty_actual}] " if qty_actual > 0 else "🛒 "
+            badge = f"✅ [{qty_actual}] " if qty_actual > 0 else "➕"
             
             if st.button(f"{badge} {nombre}", key=f"btn_{cat}_{idx}", use_container_width=True):
                 soplon = ""
