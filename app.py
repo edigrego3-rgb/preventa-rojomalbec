@@ -24,7 +24,7 @@ st.set_page_config(
 
 
 # --- SEGURIDAD: PANTALLA DE LOGIN ---
-from modules.data_manager import load_catalog_data, guardar_visibilidad, get_vendedores_auth
+from modules.data_manager import load_catalog_data, guardar_visibilidad, get_vendedores_auth, get_estadisticas_vendedor
 import time
 
 if "autenticado" not in st.session_state:
@@ -279,6 +279,15 @@ if 'margen_global' not in st.session_state:
     st.session_state.margen_global = 30
 
 
+
+# --- CARGA DE ESTADISTICAS REALES ---
+stats = {'Ganancia_Neta': 0.0, 'Total_Envases': 0, 'Categorias': {'Sales': 0, 'Blends': 0, 'Tés': 0, 'Pimientas': 0, 'Otros': 0}}
+if st.session_state.get('vendedor_nombre'):
+    try:
+        stats = get_estadisticas_vendedor(st.session_state.vendedor_nombre)
+    except:
+        pass
+
 # --- HEADER COMPACTO ---
 total_items = sum(item['cantidad'] for item in st.session_state.carrito.values())
 col_logo, col_titulo, col_cart = st.columns([1, 4, 2])
@@ -495,14 +504,14 @@ df_catalogo = df_catalogo[df_catalogo["Visible_B2B"] == True]
 
 
 # --- GAMIFICACIÓN Y METAS ---
-st.markdown('''
+st.markdown(f'''
 <div style='background-color:#fff3cd; padding:10px; border-radius:10px; border-left:5px solid #ffc107; margin-bottom:15px;'>
     <div style='display:flex; justify-content:space-between; font-weight:bold; color:#856404;'>
         <span>🏆 Meta del Día: 100 Envases</span>
-        <span>Llevás: 0 Envases</span>
+        <span>Llevás: {stats['Total_Envases']} Envases</span>
     </div>
     <div style='background:#e9ecef; border-radius:5px; height:10px; margin-top:5px; overflow:hidden;'>
-        <div style='background:#ffc107; height:10px; width:74%;'></div>
+        <div style='background:#ffc107; height:10px; width:{min(100, int(stats['Total_Envases']))}%;'></div>
     </div>
     <div style='font-size:0.8rem; color:#856404; margin-top:5px;'>🔥 ¡¡A vender se ha dicho! de tu bono diario!</div>
 </div>
@@ -589,24 +598,20 @@ st.markdown('''
 </style>
 ''', unsafe_allow_html=True)
 
-with st.expander("📊 MIS ESTADÍSTICAS (Agosto)", expanded=False):
+with st.expander("📊 MIS ESTADÍSTICAS (Mensuales)", expanded=False):
     c1, c2 = st.columns(2)
     with c1:
-        st.markdown("<div class='stat-box'><div class='stat-title'>Ganancia Neta</div><div class='stat-value'>$ 0</div></div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='stat-box'><div class='stat-title'>Ganancia Neta</div><div class='stat-value'>$ {stats['Ganancia_Neta']:,.0f}</div></div>", unsafe_allow_html=True)
     with c2:
-        st.markdown("<div class='stat-box'><div class='stat-title'>Envases Vendidos</div><div class='stat-value'>0 unid.</div></div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='stat-box'><div class='stat-title'>Envases Vendidos</div><div class='stat-value'>{stats['Total_Envases']} unid.</div></div>", unsafe_allow_html=True)
         
-    st.markdown("<h5 style='color:#d4af37; margin-top:5px; font-weight:bold;'>📈 Desglose del Mes</h5>", unsafe_allow_html=True)
-    st.markdown('''
+    st.markdown("<h5 style='color:#d4af37; margin-top:5px; font-weight:bold;'>📈 Desglose por Familia</h5>", unsafe_allow_html=True)
+    st.markdown(f'''
 <div style='background:#fff; color:#222; padding:10px; border-radius:8px; border:1px solid #eee; margin-bottom:10px;'>
-<div class='top-item' style='background:#f8f9fa; border-radius:5px 5px 0 0;'><span style='color:#222;'>🧂 <b>SALES (0 envases)</b></span></div>
-<div class='top-item' style='padding-left:15px; font-size:0.85rem; border-bottom:none;'><span>↳ Sal Malbec</span><b style='color:#555;'>0 unid.</b></div>
-<div class='top-item' style='padding-left:15px; font-size:0.85rem;'><span>↳ Sal Hawaiana</span><b style='color:#555;'>0 unid.</b></div>
-<div class='top-item' style='background:#f8f9fa; margin-top:10px;'><span style='color:#222;'>🌿 <b>BLENDS (0 envases)</b></span></div>
-<div class='top-item' style='padding-left:15px; font-size:0.85rem; border-bottom:none;'><span>↳ Ajo a las Hierbas</span><b style='color:#555;'>0 unid.</b></div>
-<div class='top-item' style='padding-left:15px; font-size:0.85rem;'><span>↳ Curry Colombo</span><b style='color:#555;'>0 unid.</b></div>
-<div class='top-item' style='background:#f8f9fa; margin-top:10px;'><span style='color:#222;'>🍵 <b>TÉS (0 envases)</b></span></div>
-<div class='top-item' style='padding-left:15px; font-size:0.85rem; border-bottom:none;'><span>↳ Té Karak</span><b style='color:#555;'>0 unid.</b></div>
+<div class='top-item' style='background:#f8f9fa; border-radius:5px 5px 0 0;'><span style='color:#222;'>🧂 <b>SALES ({stats['Categorias']['Sales']} envases)</b></span></div>
+<div class='top-item' style='background:#f8f9fa; margin-top:10px;'><span style='color:#222;'>🌿 <b>BLENDS ({stats['Categorias']['Blends']} envases)</b></span></div>
+<div class='top-item' style='background:#f8f9fa; margin-top:10px;'><span style='color:#222;'>🍵 <b>TÉS ({stats['Categorias']['Tés']} envases)</b></span></div>
+<div class='top-item' style='background:#f8f9fa; margin-top:10px;'><span style='color:#222;'>🌶️ <b>PIMIENTAS ({stats['Categorias']['Pimientas']} envases)</b></span></div>
 </div>
     ''', unsafe_allow_html=True)
 
