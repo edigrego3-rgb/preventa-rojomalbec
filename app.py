@@ -8,7 +8,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 if current_dir not in sys.path:
     sys.path.insert(0, current_dir)
 
-from modules.data_manager import load_catalog_data, guardar_visibilidad
+from modules.data_manager import load_catalog_data, guardar_visibilidad, get_vendedores
 from modules.utils import redondear_precio, extraer_descripcion, generar_mensaje_whatsapp
 
 # --- CONFIGURACIÓN DE PÁGINA ---
@@ -24,24 +24,39 @@ st.set_page_config(
 
 
 # --- SEGURIDAD: PANTALLA DE LOGIN ---
+from modules.data_manager import load_catalog_data, guardar_visibilidad, get_vendedores_auth
+import time
+
 if "autenticado" not in st.session_state:
     st.session_state.autenticado = False
+if "vendedor_nombre" not in st.session_state:
+    st.session_state.vendedor_nombre = ""
 
 if not st.session_state.autenticado:
     st.markdown("<h2 style='text-align:center; color:#d4af37;'>🔒 Acceso Preventistas</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align:center;'>Por favor ingresá tu clave para acceder al sistema.</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-align:center;'>Por favor seleccioná tu nombre e ingresá tu clave oficial.</p>", unsafe_allow_html=True)
     
     col_l1, col_l2, col_l3 = st.columns([1,2,1])
     with col_l2:
+        diccionario_claves = get_vendedores_auth()
+        nombres_vendedores = list(diccionario_claves.keys())
+        
+        vendedor_elegido = st.selectbox("¿Quién sos?", [""] + nombres_vendedores)
         clave = st.text_input("Contraseña", type="password")
+        
         if st.button("Ingresar", use_container_width=True, type="primary"):
-            if clave == "Rush2112":
+            if not vendedor_elegido:
+                st.error("❌ Por favor seleccioná tu nombre de la lista.")
+            elif vendedor_elegido in diccionario_claves and clave == str(diccionario_claves[vendedor_elegido]):
                 st.session_state.autenticado = True
+                st.session_state.vendedor_nombre = vendedor_elegido
+                st.success(f"✅ ¡Bienvenido, {vendedor_elegido}!")
+                time.sleep(1)
                 st.rerun()
             else:
-                st.error("❌ Clave incorrecta.")
+                st.error("❌ Clave incorrecta para ese usuario.")
     
-    st.stop()  # Detiene la ejecucion si no esta logueado
+    st.stop()
 
 # --- ESTILO CLON B2B ---
 
@@ -263,21 +278,6 @@ if 'vendedor_nombre' not in st.session_state:
 if 'margen_global' not in st.session_state:
     st.session_state.margen_global = 30
 
-# --- IDENTIFICACIÓN DEL VENDEDOR ---
-if not st.session_state.vendedor_nombre:
-    st.markdown("<br><br>", unsafe_allow_html=True)
-    st.markdown("<h2 style='text-align:center; color:#d4af37;'>👋 Bienvenido a Preventa</h2>", unsafe_allow_html=True)
-    with st.container():
-        st.markdown("<div style='background:#1a1a24; padding:20px; border-radius:10px; box-shadow:0 4px 10px rgba(0,0,0,0.5); max-width:400px; margin:auto; color:white; border:1px solid #333;'>", unsafe_allow_html=True)
-        nombre_input = st.text_input("Ingresá tu nombre para tomar pedidos:", placeholder="Ej: Juan Pérez")
-        if st.button("Ingresar al Catálogo", type="primary", use_container_width=True):
-            if nombre_input:
-                st.session_state.vendedor_nombre = nombre_input
-                st.rerun()
-            else:
-                st.error("Por favor, ingresá tu nombre.")
-        st.markdown("</div>", unsafe_allow_html=True)
-    st.stop()
 
 # --- HEADER COMPACTO ---
 total_items = sum(item['cantidad'] for item in st.session_state.carrito.values())
