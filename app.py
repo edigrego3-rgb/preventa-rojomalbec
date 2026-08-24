@@ -8,7 +8,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 if current_dir not in sys.path:
     sys.path.insert(0, current_dir)
 
-from modules.data_manager import load_catalog_data, guardar_visibilidad, get_vendedores
+from modules.data_manager import load_catalog_data, guardar_visibilidad
 from modules.utils import redondear_precio, extraer_descripcion, generar_mensaje_whatsapp
 
 # --- CONFIGURACIÓN DE PÁGINA ---
@@ -24,7 +24,7 @@ st.set_page_config(
 
 
 # --- SEGURIDAD: PANTALLA DE LOGIN ---
-from modules.data_manager import load_catalog_data, guardar_visibilidad, get_vendedores_auth
+from modules.data_manager import load_catalog_data, guardar_visibilidad_auth
 import time
 
 if "autenticado" not in st.session_state:
