@@ -161,7 +161,7 @@ def guardar_visibilidad(nombres_visibles, todos_los_nombres):
 @st.cache_data(ttl=300)
 def get_estadisticas_vendedor(vendedor_nombre):
     stats = {
-        'Ganancia_Neta': 0.0,
+        'Comisiones': 0.0,
         'Total_Envases': 0,
         'Categorias': {
             'Sales': 0,
@@ -202,13 +202,13 @@ def get_estadisticas_vendedor(vendedor_nombre):
             except:
                 kg_vendidos = 0.0
                 
-            raw_ganancia = str(v.get("Ganancia_Neta", "0.0")).replace(',', '.')
+            raw_comision = str(v.get("Comision_Vendedor", "0.0")).replace(',', '.')
             try:
-                ganancia_neta_venta = float(raw_ganancia)
+                comision = float(raw_comision)
             except:
-                ganancia_neta_venta = 0.0
+                comision = 0.0
                 
-            stats['Ganancia_Neta'] += ganancia_neta_venta
+            stats['Comisiones'] += comision
             
             lote_info = dict_lotes.get(lote_id, {})
             gramaje = float(lote_info.get("Gramaje_Por_Envase", 1000.0) or 1000.0)
