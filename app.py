@@ -24,7 +24,7 @@ st.set_page_config(
 
 
 # --- SEGURIDAD: PANTALLA DE LOGIN ---
-from modules.data_manager import load_catalog_data, guardar_visibilidad_auth
+from modules.data_manager import load_catalog_data, guardar_visibilidad, get_vendedores_auth
 import time
 
 if "autenticado" not in st.session_state:
