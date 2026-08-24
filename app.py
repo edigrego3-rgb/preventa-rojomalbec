@@ -499,12 +499,12 @@ st.markdown('''
 <div style='background-color:#fff3cd; padding:10px; border-radius:10px; border-left:5px solid #ffc107; margin-bottom:15px;'>
     <div style='display:flex; justify-content:space-between; font-weight:bold; color:#856404;'>
         <span>🏆 Meta del Día: 100 Envases</span>
-        <span>Llevás: 74 Envases</span>
+        <span>Llevás: 0 Envases</span>
     </div>
     <div style='background:#e9ecef; border-radius:5px; height:10px; margin-top:5px; overflow:hidden;'>
         <div style='background:#ffc107; height:10px; width:74%;'></div>
     </div>
-    <div style='font-size:0.8rem; color:#856404; margin-top:5px;'>🔥 ¡Estás a solo 26 envases de tu bono diario!</div>
+    <div style='font-size:0.8rem; color:#856404; margin-top:5px;'>🔥 ¡¡A vender se ha dicho! de tu bono diario!</div>
 </div>
 ''', unsafe_allow_html=True)
 
@@ -599,13 +599,13 @@ with st.expander("📊 MIS ESTADÍSTICAS (Agosto)", expanded=False):
     st.markdown("<h5 style='color:#d4af37; margin-top:5px; font-weight:bold;'>📈 Desglose del Mes</h5>", unsafe_allow_html=True)
     st.markdown('''
 <div style='background:#fff; color:#222; padding:10px; border-radius:8px; border:1px solid #eee; margin-bottom:10px;'>
-<div class='top-item' style='background:#f8f9fa; border-radius:5px 5px 0 0;'><span style='color:#222;'>🧂 <b>SALES (100 envases totales)</b></span></div>
+<div class='top-item' style='background:#f8f9fa; border-radius:5px 5px 0 0;'><span style='color:#222;'>🧂 <b>SALES (0 envases)</b></span></div>
 <div class='top-item' style='padding-left:15px; font-size:0.85rem; border-bottom:none;'><span>↳ Sal Malbec</span><b style='color:#555;'>85 unid.</b></div>
 <div class='top-item' style='padding-left:15px; font-size:0.85rem;'><span>↳ Sal Hawaiana</span><b style='color:#555;'>15 unid.</b></div>
 <div class='top-item' style='background:#f8f9fa; margin-top:10px;'><span style='color:#222;'>🌿 <b>BLENDS (84 envases totales)</b></span></div>
 <div class='top-item' style='padding-left:15px; font-size:0.85rem; border-bottom:none;'><span>↳ Ajo a las Hierbas</span><b style='color:#555;'>54 unid.</b></div>
 <div class='top-item' style='padding-left:15px; font-size:0.85rem;'><span>↳ Curry Colombo</span><b style='color:#555;'>30 unid.</b></div>
-<div class='top-item' style='background:#f8f9fa; margin-top:10px;'><span style='color:#222;'>🍵 <b>TÉS (30 envases totales)</b></span></div>
+<div class='top-item' style='background:#f8f9fa; margin-top:10px;'><span style='color:#222;'>🍵 <b>TÉS (0 envases)</b></span></div>
 <div class='top-item' style='padding-left:15px; font-size:0.85rem; border-bottom:none;'><span>↳ Té Karak</span><b style='color:#555;'>30 unid.</b></div>
 </div>
     ''', unsafe_allow_html=True)
