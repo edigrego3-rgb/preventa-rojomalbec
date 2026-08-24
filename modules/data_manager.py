@@ -181,7 +181,7 @@ def get_estadisticas_vendedor(vendedor_nombre):
         sh = gc.open(SHEET_NAME)
         # Bajar ventas
         ws_v = sh.worksheet("ventas")
-        ventas = ws_v.get_all_records(default_blank="")
+        ventas = ws_v.get_all_records(default_blank="", value_render_option="UNFORMATTED_VALUE")
         
         # Filtrar ventas del vendedor
         ventas_vendedor = [v for v in ventas if str(v.get("Vendedor", "")).strip().lower() == vendedor_nombre.strip().lower()]
@@ -190,30 +190,35 @@ def get_estadisticas_vendedor(vendedor_nombre):
             
         # Bajar lotes para cruzar datos
         ws_l = sh.worksheet("lotes_produccion")
-        lotes = ws_l.get_all_records(default_blank="")
+        lotes = ws_l.get_all_records(default_blank="", value_render_option="UNFORMATTED_VALUE")
         dict_lotes = {str(l.get("Lote_Produccion", "")).strip(): l for l in lotes}
         
         for v in ventas_vendedor:
             lote_id = str(v.get("Lote_Produccion", "")).strip()
-            kg_vendidos = float(v.get("Cantidad_Vendida_KG", 0.0) or 0.0)
             
-            # Usar Comision_Vendedor o Ganancia_Neta según corresponda (asumimos Ganancia_Neta por lo que decia la UI antes, o Comision para el vendedor)
-            # En la UI decia "Ganancia Neta", sumemos eso para no cambiar la etiqueta
-            ganancia_neta_venta = float(v.get("Ganancia_Neta", 0.0) or 0.0)
+            raw_kg = str(v.get("Cantidad_Vendida_KG", "0.0")).replace(',', '.')
+            try:
+                kg_vendidos = float(raw_kg)
+            except:
+                kg_vendidos = 0.0
+                
+            raw_ganancia = str(v.get("Ganancia_Neta", "0.0")).replace(',', '.')
+            try:
+                ganancia_neta_venta = float(raw_ganancia)
+            except:
+                ganancia_neta_venta = 0.0
+                
             stats['Ganancia_Neta'] += ganancia_neta_venta
             
-            # Cruzar con lote para obtener gramaje y producto
             lote_info = dict_lotes.get(lote_id, {})
             gramaje = float(lote_info.get("Gramaje_Por_Envase", 1000.0) or 1000.0)
             if gramaje <= 0: gramaje = 1000.0
             
-            # Calcular envases (misma formula del ERP)
             envases = int(round((kg_vendidos * 1000) / gramaje))
             if envases <= 0 and kg_vendidos > 0: envases = 1
             
             stats['Total_Envases'] += envases
             
-            # Categorizar por nombre de producto
             prod = str(lote_info.get("Producto", "")).lower()
             if "sal " in prod or "sales " in prod or prod.startswith("sal"):
                 stats['Categorias']['Sales'] += envases
