@@ -167,7 +167,7 @@ def buscar_imagenes(nombre_producto):
     elif "kebab" in term: term = "kebab"
     elif "panko" in term or "sesamo y limon" in term: term = "sesamo"
     elif "españa profunda" in term or "espana" in term: term = "espana"
-    elif "gluhwein"
+    elif "gluhwein" in term: term = "gluhwein"
     elif "mocktail" in term: term = "botanico"
     elif "panch" in term: term = "panch"
     elif "criolla deshidratada" in term: term = "criolla"
